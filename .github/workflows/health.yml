@@ -45,4 +45,5 @@ jobs:
           test "$(echo "$body" | jq -r .data.times.dhuhr)" != "null"
 
       - name: Website
-        run: curl -fsS -o /dev/null -H "Accept: text/html" "$BASE/"
+        run: |
+          curl -fsS -o /dev/null -H "Accept: text/html" "$BASE/"
