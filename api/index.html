@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0d1a2b">
+  <title>Prayer Times API</title>
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/api.css">
+  <script type="importmap">
+    {
+      "imports": {
+        "adhan": "https://esm.sh/adhan@4.4.3",
+        "tz-lookup": "https://esm.sh/tz-lookup@6.1.25"
+      }
+    }
+  </script>
+</head>
+<body data-endpoint="index">
+  <div id="app">
+    <header class="api-top">
+      <div class="api-top-inner">
+        <a class="back" href="../index.html">← Zur Karte</a>
+        <h1>Prayer Times API <span class="arabic" lang="ar">مواقيت الصلاة</span></h1>
+        <p>Gebetszeiten, Monatskalender und Qibla-Richtung als JSON – direkt über die URL.
+           Die Berechnung läuft im Browser, ganz ohne Server.</p>
+      </div>
+    </header>
+
+    <main class="api-main">
+      <section class="panel glass">
+        <h2>Ausprobieren</h2>
+        <form id="builder" class="builder">
+          <div class="b-row">
+            <label for="bEndpoint">Endpunkt</label>
+            <select id="bEndpoint" name="endpoint" class="field">
+              <option value="times">times – Gebetszeiten eines Tages</option>
+              <option value="calendar">calendar – ganzer Monat</option>
+              <option value="qibla">qibla – Qibla-Richtung</option>
+              <option value="methods">methods – Methoden &amp; Madhabs</option>
+            </select>
+          </div>
+
+          <div class="b-row" data-for="times calendar qibla">
+            <span class="label" id="modeLabel">Ort angeben über</span>
+            <div class="segmented" role="radiogroup" aria-labelledby="modeLabel">
+              <label><input type="radio" name="mode" value="city" checked><span>Stadt</span></label>
+              <label><input type="radio" name="mode" value="coords"><span>Koordinaten</span></label>
+            </div>
+          </div>
+
+          <div class="b-grid" data-mode="city">
+            <div class="b-row"><label for="bCity">Stadt</label>
+              <input id="bCity" name="city" class="field" value="Pforzheim"></div>
+            <div class="b-row"><label for="bCountry">Land (optional)</label>
+              <input id="bCountry" name="country" class="field" value="Germany"></div>
+          </div>
+
+          <div class="b-grid" data-mode="coords" hidden>
+            <div class="b-row"><label for="bLat">Breitengrad (lat)</label>
+              <input id="bLat" name="lat" class="field" inputmode="decimal" value="48.8908"></div>
+            <div class="b-row"><label for="bLon">Längengrad (lon)</label>
+              <input id="bLon" name="lon" class="field" inputmode="decimal" value="8.6987"></div>
+          </div>
+
+          <div class="b-grid">
+            <div class="b-row" data-for="times"><label for="bDate">Datum</label>
+              <input id="bDate" name="date" type="date" class="field"></div>
+            <div class="b-row" data-for="calendar" hidden><label for="bMonth">Monat</label>
+              <input id="bMonth" name="month" type="month" class="field" placeholder="YYYY-MM"></div>
+          </div>
+
+          <div class="b-grid" data-for="times calendar">
+            <div class="b-row"><label for="bMethod">Methode</label>
+              <select id="bMethod" name="method" class="field"></select></div>
+            <div class="b-row"><label for="bMadhab">Madhab</label>
+              <select id="bMadhab" name="madhab" class="field"></select></div>
+          </div>
+
+          <div class="url-box">
+            <span class="method-tag">GET</span>
+            <code id="builtUrl"></code>
+          </div>
+
+          <div class="b-actions">
+            <button id="runBtn" class="btn primary" type="submit">Anfrage ausführen</button>
+            <button id="copyUrl" class="btn" type="button">URL kopieren</button>
+            <a id="openLink" class="btn" target="_blank" rel="noopener">In neuem Tab öffnen ↗</a>
+          </div>
+        </form>
+
+        <div id="preview" class="preview">
+          <p class="muted">Die Antwort erscheint hier.</p>
+        </div>
+      </section>
+
+      <section class="panel glass">
+        <h2>Endpunkte</h2>
+        <p class="muted section-lead">
+          Ort immer entweder über <code>lat</code> &amp; <code>lon</code> oder über
+          <code>city</code> (optional mit <code>country</code>). Jede Endpunkt-Seite liefert
+          reines JSON. Mit <code>&amp;view=1</code> gibt es eine formatierte Ansicht mit
+          Kopieren und Download.
+        </p>
+        <div id="reference" class="reference"></div>
+      </section>
+
+      <section class="panel glass">
+        <h2>Für Postman, curl &amp; Programme</h2>
+        <p class="muted section-lead">
+          Die <code>.html</code>-Seiten rechnen im Browser – Programme ohne JavaScript erhalten dort nur HTML.
+          Echtes JSON (<code>application/json</code>, CORS aktiviert) liefern die Endpunkte <strong>ohne</strong>
+          <code>.html</code>, bereitgestellt vom Cloudflare Worker (lokal: <code>npm run dev</code> → Port 8787).
+        </p>
+        <div class="reference">
+          <article class="ref-card">
+            <div class="ref-head"><span class="method-tag">GET</span><code>/api/times?lat=48.89&amp;lon=8.70&amp;date=2026-11-22&amp;method=TURKEY</code></div>
+          </article>
+          <article class="ref-card">
+            <div class="ref-head"><span class="method-tag">GET</span><code>/api/times?city=Pforzheim&amp;country=Germany&amp;method=TURKEY</code></div>
+          </article>
+          <article class="ref-card">
+            <div class="ref-head"><span class="method-tag">GET</span><code>/api/calendar?lat=48.89&amp;lon=8.70&amp;month=2026-12</code></div>
+          </article>
+          <article class="ref-card">
+            <div class="ref-head"><span class="method-tag">GET</span><code>/api/qibla?city=Wien&amp;country=Austria</code> · <code>/api/methods</code> · <code>/api</code></div>
+          </article>
+        </div>
+        <p class="footnote">
+          Fehler kommen mit passendem HTTP-Status (400, 404, 422, 502) und demselben JSON-Format.
+        </p>
+      </section>
+
+      <section class="panel glass">
+        <h2>Antwortformat &amp; Fehler</h2>
+        <p class="muted section-lead">
+          Jede Antwort enthält <code>status</code> und <code>endpoint</code>, dazu entweder
+          <code>data</code> oder <code>error</code> mit <code>code</code> und <code>message</code>.
+          Zeiten, die es an einem Ort nicht gibt (z. B. im Polarsommer), sind <code>null</code>.
+        </p>
+        <table class="param-table">
+          <thead><tr><th>Status</th><th>Code</th><th>Bedeutung</th></tr></thead>
+          <tbody>
+            <tr><td>400</td><td><code>missing_location</code></td><td>Weder lat/lon noch city angegeben</td></tr>
+            <tr><td>400</td><td><code>invalid_lat</code> · <code>invalid_lon</code></td><td>Koordinate fehlt oder außerhalb des Bereichs</td></tr>
+            <tr><td>400</td><td><code>invalid_date</code> · <code>invalid_month</code></td><td>Falsches Format (YYYY-MM-DD bzw. YYYY-MM)</td></tr>
+            <tr><td>400</td><td><code>invalid_method</code> · <code>invalid_madhab</code></td><td>Unbekannter Wert – erlaubte Werte stehen in der Meldung</td></tr>
+            <tr><td>404</td><td><code>city_not_found</code></td><td>Stadt nicht gefunden</td></tr>
+            <tr><td>422</td><td><code>timezone_not_found</code></td><td>Keine Zeitzone für den Ort</td></tr>
+            <tr><td>502</td><td><code>geocoding_failed</code></td><td>Ortssuche (Nominatim) nicht erreichbar</td></tr>
+          </tbody>
+        </table>
+        <p class="footnote">
+          Hinweis: Die Seiten liefern JSON nur im Browser (JavaScript nötig) – <code>curl</code> oder
+          <code>fetch()</code> erhalten nur das HTML-Gerüst. Für Browser-Automatisierung (z. B. Playwright)
+          steht das Ergebnis als <code>window.apiResult</code> bereit.
+          Die Ortssuche nutzt den öffentlichen Dienst Nominatim – bitte keine Massenabfragen.
+        </p>
+      </section>
+    </main>
+  </div>
+  <script type="module" src="../js/api/docs.js"></script>
+</body>
+</html>

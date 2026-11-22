@@ -1,0 +1,40 @@
+/* Seitenaufbau: Glas-Navigationsleiste, Raster, Fußzeile */
+.topbar {
+  position: sticky; top: 0; z-index: 1000;
+  display: flex; align-items: center; gap: 12px;
+  min-height: 60px; padding: 10px 24px;
+  border-width: 0 0 1px; border-radius: 0;
+}
+.brand-mark {
+  flex: none; display: grid; place-items: center;
+  width: 38px; height: 38px; border-radius: 11px;
+  background: linear-gradient(145deg, var(--night), var(--night-2));
+  color: var(--gold-on-night);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 12%);
+}
+.brand-mark svg { width: 20px; height: 20px; }
+.brand { flex: 1; min-width: 0; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+h1 { font: 700 19px var(--font-display); letter-spacing: -.02em; }
+.brand .arabic { color: var(--gold); font-size: 19px; line-height: 1; }
+
+.topnav { display: flex; gap: 6px; }
+.topnav a {
+  padding: 7px 14px; border-radius: 999px;
+  background: var(--fill); color: var(--accent);
+  font-size: 13px; font-weight: 600; text-decoration: none;
+}
+.topnav a:hover { background: var(--fill-hover); }
+
+.app-layout {
+  max-width: 1500px; margin: 0 auto; padding: 20px 24px;
+  display: grid; grid-template-columns: minmax(0, 1fr) 390px; gap: 20px;
+  min-height: calc(100vh - 110px);
+}
+
+footer { padding: 4px 24px 22px; text-align: center; color: var(--faint); font-size: 12px; }
+
+@media (max-width: 900px) {
+  .app-layout { grid-template-columns: minmax(0, 1fr); padding: 12px; gap: 12px; }
+  .topbar { padding: 10px 14px; }
+  .brand .arabic { display: none; }
+}

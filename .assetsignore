@@ -1,0 +1,12 @@
+# Nicht als statische Dateien veröffentlichen
+node_modules
+worker
+.wrangler
+wrangler.toml
+package.json
+package-lock.json
+.gitignore
+.assetsignore
+README.md
+.vscode
+.dev.vars

@@ -1,0 +1,94 @@
+/* Kartenbereich mit Glas-Suchleiste und Overlays */
+.map-section {
+  /* Desktop: Karte bleibt in Fensterhöhe stehen, die Seitenleiste scrollt */
+  position: sticky; top: 80px; align-self: start;
+  height: calc(100vh - 100px); min-height: 520px; overflow: hidden;
+  border-radius: var(--radius-xl);
+  background: var(--fill);
+  box-shadow: var(--shadow);
+  outline: 1px solid var(--line);
+}
+#map { position: absolute; inset: 0; z-index: 1; }
+.leaflet-container { font-family: var(--font); background: var(--bg); }
+.leaflet-control-zoom { border: 0 !important; box-shadow: var(--shadow) !important; border-radius: 12px !important; overflow: hidden; }
+.leaflet-control-zoom a { background: var(--glass-strong) !important; color: var(--ink) !important; border-color: var(--line) !important; }
+
+/* Kacheln: im Hellen leicht warm, im Dunkeln invertiert */
+.leaflet-tile-pane { filter: sepia(.12) saturate(.9); }
+@media (prefers-color-scheme: dark) {
+  .leaflet-tile-pane { filter: invert(1) hue-rotate(180deg) brightness(.8) contrast(.9) saturate(.7); }
+}
+
+/* Ortsmarkierung: pulsierender Smaragd-Punkt mit Goldrand */
+.pin { background: none; border: 0; }
+.pin-dot {
+  position: absolute; inset: 9px; border-radius: 50%;
+  background: var(--accent); border: 3px solid #fff;
+  box-shadow: 0 0 0 2px var(--gold), 0 4px 12px rgb(0 0 0 / 30%);
+}
+.pin::before {
+  content: ""; position: absolute; inset: 0; border-radius: 50%;
+  background: var(--accent); opacity: .25;
+  animation: pin-pulse 2.4s ease-out infinite;
+}
+@keyframes pin-pulse {
+  from { transform: scale(.5); opacity: .45; }
+  to { transform: scale(1.4); opacity: 0; }
+}
+
+/* Suchleiste */
+.map-search {
+  position: absolute; z-index: 600; top: 16px; left: 50%; transform: translateX(-50%);
+  width: min(440px, calc(100% - 32px));
+}
+.search-box {
+  display: flex; align-items: center; gap: 8px;
+  padding-block: 5px; padding-inline: 14px 5px; border-radius: 999px;
+}
+.search-box svg { flex: none; width: 16px; height: 16px; color: var(--muted); }
+.search-box input {
+  flex: 1; min-width: 0; height: 34px; border: 0; outline: none;
+  background: transparent; font-size: 15px;
+}
+.search-box input::-webkit-search-cancel-button { display: none; }
+.search-box button {
+  flex: none; height: 34px; padding: 0 16px; border: 0; border-radius: 999px;
+  background: var(--accent); color: #fff; font-size: 14px; font-weight: 600; cursor: pointer;
+}
+.search-box button:disabled { opacity: .6; cursor: progress; }
+
+.search-results {
+  margin: 8px 0 0; padding: 6px; list-style: none; border-radius: var(--radius-md);
+}
+.search-results:empty { display: none; }
+.search-results button {
+  width: 100%; padding: 10px 12px; border: 0; border-radius: 10px;
+  background: none; text-align: start; cursor: pointer;
+}
+.search-results button:hover, .search-results button:focus-visible { background: var(--fill); }
+.search-results strong { display: block; font-size: 15px; font-weight: 600; }
+.search-results span { display: block; margin-top: 2px; color: var(--muted); font-size: 12px; }
+.search-results .search-empty { padding: 10px 12px; color: var(--muted); font-size: 14px; }
+
+.locate-btn {
+  /* Immer rechts: die Karte wird nicht gespiegelt, Zoom sitzt fest unten links */
+  position: absolute; z-index: 500; right: 16px; bottom: 22px;
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 11px 16px; border-radius: 999px;
+  color: var(--accent); font-size: 14px; font-weight: 600; cursor: pointer;
+}
+.locate-btn svg { width: 16px; height: 16px; }
+.locate-btn:hover { color: var(--accent-bright); }
+.locate-btn:disabled { opacity: .7; cursor: progress; }
+
+.map-error {
+  display: none; position: absolute; z-index: 650; bottom: 80px; inset-inline-start: 16px;
+  max-width: calc(100% - 32px); padding: 11px 14px; border-radius: var(--radius-md);
+  background: var(--warn-bg); color: var(--warn-ink); font-size: 13px;
+  box-shadow: var(--shadow);
+}
+
+@media (max-width: 900px) {
+  .map-section { position: relative; top: auto; height: 55vh; min-height: 360px; }
+  .map-search { top: 12px; }
+}

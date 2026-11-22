@@ -1,0 +1,86 @@
+/* Gebetszeiten: Mihrab-Karte für das nächste Gebet, gruppierte Liste */
+
+/* ---------- Mihrab-Bogen ---------- */
+.next-prayer {
+  position: relative; overflow: hidden; isolation: isolate;
+  margin-top: 18px; padding: 58px 20px 22px;
+  text-align: center; color: var(--on-night);
+  /* Kuppelförmiger Bogen wie ein Mihrab */
+  border-radius: 50% 50% var(--radius-lg) var(--radius-lg) / 120px 120px var(--radius-lg) var(--radius-lg);
+  background:
+    radial-gradient(120% 80% at 50% 0%, rgb(226 191 122 / 22%), transparent 60%),
+    linear-gradient(165deg, var(--night) 0%, var(--night-2) 100%);
+  box-shadow: 0 12px 30px rgb(10 20 40 / 28%), inset 0 1px 0 rgb(255 255 255 / 10%);
+}
+/* Sternmuster + goldener Innenbogen */
+.next-prayer::before {
+  content: ""; position: absolute; inset: 0; z-index: -1;
+  background: var(--pattern-night); background-size: 64px; opacity: .9;
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, transparent 85%);
+  mask-image: linear-gradient(180deg, #000 0%, transparent 85%);
+}
+.next-prayer::after {
+  content: ""; position: absolute; inset: 8px; z-index: -1; pointer-events: none;
+  border: 1px solid rgb(226 191 122 / 38%);
+  border-radius: 50% 50% 14px 14px / 112px 112px 14px 14px;
+}
+.next-prayer .eyebrow { color: var(--gold-on-night); }
+.next-prayer-arabic {
+  display: block; margin-top: 4px;
+  font-family: var(--font-arabic); font-size: 34px; line-height: 1.3; color: var(--gold-on-night);
+}
+.next-prayer-name { display: block; font: 600 17px var(--font-display); letter-spacing: -.01em; }
+.countdown {
+  display: block; margin-top: 8px;
+  font: 200 46px/1 var(--font-display); letter-spacing: -.02em; font-variant-numeric: tabular-nums;
+}
+.next-prayer-at { margin-top: 8px; color: var(--on-night-muted); font-size: 13px; }
+
+/* ---------- Gruppierte Liste ---------- */
+.prayer-list {
+  margin-top: 16px; border-radius: var(--radius-md);
+  background: var(--fill); overflow: hidden;
+}
+.prayer-row {
+  position: relative;
+  display: grid; grid-template-columns: auto 1fr auto auto; align-items: center; gap: 12px;
+  padding: 12px 14px;
+  transition: background .2s ease;
+}
+.prayer-row + .prayer-row::before {
+  content: ""; position: absolute; top: 0; inset-inline: 54px 0; height: 1px; background: var(--line);
+}
+.prayer-icon {
+  display: grid; place-items: center; width: 28px; height: 28px; border-radius: 8px;
+  background: var(--accent-soft); color: var(--accent);
+}
+.prayer-icon svg { width: 16px; height: 16px; }
+.prayer-name { font-size: 16px; font-weight: 500; }
+.prayer-arabic { font-family: var(--font-arabic); font-size: 18px; color: var(--muted); line-height: 1; }
+.prayer-time { font: 600 17px var(--font-display); font-variant-numeric: tabular-nums; min-width: 48px; text-align: end; }
+
+.prayer-row.sunrise .prayer-icon { background: var(--gold-soft); color: var(--gold); }
+.prayer-row.sunrise .prayer-name, .prayer-row.sunrise .prayer-time { color: var(--muted); font-weight: 400; }
+
+.prayer-row.passed .prayer-name, .prayer-row.passed .prayer-time, .prayer-row.passed .prayer-arabic { color: var(--faint); }
+.prayer-row.passed .prayer-icon { background: var(--fill); color: var(--faint); }
+
+.prayer-row.next { background: var(--accent-soft); }
+.prayer-row.next::after {
+  content: ""; position: absolute; inset-inline-start: 0; top: 10px; bottom: 10px; width: 3px;
+  border-start-end-radius: 3px; border-end-end-radius: 3px; background: var(--gold);
+}
+.prayer-row.next .prayer-icon { background: var(--accent); color: #fff; }
+.prayer-row.next .prayer-name { font-weight: 600; }
+.prayer-row.next .prayer-time { color: var(--accent); }
+
+/* ---------- Leerzustand ---------- */
+.empty-state {
+  min-height: 190px; padding: 24px; display: flex; flex-direction: column;
+  justify-content: center; align-items: center; gap: 6px; text-align: center; color: var(--muted);
+}
+.empty-icon { color: var(--gold); margin-bottom: 4px; }
+.empty-icon svg { width: 36px; height: 36px; }
+.empty-state .arabic { font-size: 22px; color: var(--gold); }
+.empty-state strong { color: var(--ink); font-size: 15px; font-weight: 600; }
+.empty-state span { font-size: 13px; }

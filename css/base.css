@@ -1,0 +1,207 @@
+/* Grundlagen: Schriften, Farb-Tokens (hell/dunkel), Muster, Glas, Reset */
+@import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Sans+Arabic:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  color-scheme: light;
+
+  /* Typografie: SF Pro auf Apple-Geräten, sonst Inter */
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", "Segoe UI", system-ui, sans-serif;
+  --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", "Segoe UI", system-ui, sans-serif;
+  --font-arabic: "Amiri", "Geeza Pro", "Traditional Arabic", serif;
+  --mono: ui-monospace, "SF Mono", SFMono-Regular, Consolas, monospace;
+
+  /* Farben – Sand, Smaragd, Gold */
+  --bg: #f5efe3;
+  --bg-glow-1: rgb(10 122 90 / 14%);
+  --bg-glow-2: rgb(184 137 59 / 16%);
+  --surface: #fffdf8;
+  --glass: rgb(255 253 248 / 68%);
+  --glass-strong: rgb(255 253 248 / 82%);
+  --glass-edge: rgb(255 255 255 / 70%);
+  --fill: rgb(118 104 80 / 10%);         /* Apple-artige Feldfläche */
+  --fill-hover: rgb(118 104 80 / 16%);
+  --ink: #1d1d1f;
+  --muted: #6e6e73;
+  --faint: #a1a1a6;
+  --line: rgb(60 50 30 / 12%);
+  --accent: #0a7a5a;
+  --accent-bright: #0e9a72;
+  --accent-soft: rgb(10 122 90 / 10%);
+  --accent-line: rgb(10 122 90 / 28%);
+  --gold: #a87a2c;
+  --gold-soft: rgb(184 137 59 / 14%);
+  --night: #0d1a2b;                      /* Nachtblau für Kopf & Mihrab */
+  --night-2: #0f3b33;
+  --on-night: #f5f5f7;
+  --on-night-muted: #b9c3cf;
+  --gold-on-night: #e2bf7a;
+  --warn-bg: #fff3e0;
+  --warn-ink: #8a4b12;
+  --error: #c62828;
+  --shadow: 0 1px 1px rgb(60 40 10 / 4%), 0 10px 30px rgb(60 40 10 / 10%);
+  --radius-xl: 26px;
+  --radius-lg: 20px;
+  --radius-md: 14px;
+  --radius-sm: 10px;
+
+  /* Rub-el-Hizb-Sternmuster (8 Zacken) als Kachel */
+  --pattern: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96' viewBox='0 0 96 96'%3E%3Cg fill='none' stroke='%23a87a2c' stroke-opacity='.16' stroke-width='1'%3E%3Crect x='28' y='28' width='40' height='40'/%3E%3Crect x='28' y='28' width='40' height='40' transform='rotate(45 48 48)'/%3E%3Ccircle cx='48' cy='48' r='9'/%3E%3Cpath d='M0 0l20 20M96 0L76 20M0 96l20-20M96 96L76 76M48 0v8M48 96v-8M0 48h8M96 48h-8'/%3E%3C/g%3E%3C/svg%3E");
+  --pattern-night: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96' viewBox='0 0 96 96'%3E%3Cg fill='none' stroke='%23e2bf7a' stroke-opacity='.14' stroke-width='1'%3E%3Crect x='28' y='28' width='40' height='40'/%3E%3Crect x='28' y='28' width='40' height='40' transform='rotate(45 48 48)'/%3E%3Ccircle cx='48' cy='48' r='9'/%3E%3Cpath d='M0 0l20 20M96 0L76 20M0 96l20-20M96 96L76 76M48 0v8M48 96v-8M0 48h8M96 48h-8'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --bg: #070b14;
+    --bg-glow-1: rgb(52 199 154 / 10%);
+    --bg-glow-2: rgb(226 191 122 / 9%);
+    --surface: #141824;
+    --glass: rgb(22 26 38 / 62%);
+    --glass-strong: rgb(22 26 38 / 80%);
+    --glass-edge: rgb(255 255 255 / 12%);
+    --fill: rgb(118 118 128 / 22%);
+    --fill-hover: rgb(118 118 128 / 30%);
+    --ink: #f5f5f7;
+    --muted: #a1a1a6;
+    --faint: #6e6e73;
+    --line: rgb(255 255 255 / 9%);
+    --accent: #34c79a;
+    --accent-bright: #4fdcae;
+    --accent-soft: rgb(52 199 154 / 14%);
+    --accent-line: rgb(52 199 154 / 32%);
+    --gold: #e2bf7a;
+    --gold-soft: rgb(226 191 122 / 13%);
+    --night: #0a1222;
+    --night-2: #0c2e29;
+    --warn-bg: #3a2a16;
+    --warn-ink: #f3c58f;
+    --error: #ff6961;
+    --shadow: 0 1px 1px rgb(0 0 0 / 30%), 0 12px 36px rgb(0 0 0 / 45%);
+    --pattern: var(--pattern-night);
+  }
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 15px;
+  letter-spacing: -.01em;
+  -webkit-font-smoothing: antialiased;
+  background:
+    radial-gradient(900px 600px at 0% 0%, var(--bg-glow-1), transparent 60%),
+    radial-gradient(800px 600px at 100% 100%, var(--bg-glow-2), transparent 60%),
+    var(--pattern),
+    var(--bg);
+  background-attachment: fixed;
+}
+
+h1, h2, h3, p { margin: 0; }
+a { color: var(--accent); }
+button, input, select { font: inherit; color: inherit; letter-spacing: inherit; }
+:focus-visible { outline: 3px solid var(--accent-line); outline-offset: 2px; }
+
+.arabic { font-family: var(--font-arabic); direction: rtl; letter-spacing: 0; }
+
+.eyebrow {
+  color: var(--gold); font-size: 11px; font-weight: 600;
+  letter-spacing: .08em; text-transform: uppercase;
+}
+.muted { color: var(--muted); font-size: 13px; line-height: 1.5; }
+
+/* ---------- Glas (Apple-Material) ---------- */
+.glass {
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid var(--glass-edge);
+  box-shadow: var(--shadow), inset 0 1px 0 var(--glass-edge);
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass { background: var(--glass-strong); }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .glass {
+    background: var(--surface);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+/* ---------- Ornament-Trenner mit Stern ---------- */
+.ornament {
+  display: flex; align-items: center; gap: 10px;
+  margin: 18px 0; color: var(--gold);
+}
+.ornament::before, .ornament::after {
+  content: ""; flex: 1; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-soft) 20%, var(--gold) 50%, var(--gold-soft) 80%, transparent);
+  opacity: .7;
+}
+.ornament span {
+  width: 9px; height: 9px; border: 1.5px solid currentColor; transform: rotate(45deg);
+  box-shadow: 0 0 0 0 currentColor;
+  position: relative;
+}
+.ornament span::after {
+  content: ""; position: absolute; inset: -1.5px; border: 1.5px solid currentColor; transform: rotate(45deg);
+}
+
+/* ---------- Felder & Buttons ---------- */
+.field {
+  width: 100%; height: 40px; padding: 0 12px;
+  border: 0; border-radius: var(--radius-sm);
+  background: var(--fill); color: var(--ink);
+  font-size: 15px;
+  transition: background .2s ease, box-shadow .2s ease;
+}
+.field:hover { background: var(--fill-hover); }
+.field:focus { outline: none; box-shadow: 0 0 0 3px var(--accent-line); }
+select.field {
+  min-width: 0; text-overflow: ellipsis;
+  appearance: none; -webkit-appearance: none; padding-inline-end: 34px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 4.5 6 7.5 9 4.5' fill='none' stroke='%23888' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 12px center;
+}
+select.field option { background: var(--surface); color: var(--ink); }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  height: 36px; padding: 0 16px;
+  border: 0; border-radius: 999px;
+  background: var(--fill); color: var(--accent);
+  font-size: 14px; font-weight: 600; text-decoration: none; cursor: pointer;
+  transition: background .2s ease, transform .15s ease;
+}
+.btn:hover { background: var(--fill-hover); }
+.btn:active { transform: scale(.97); }
+.btn.primary { background: var(--accent); color: #fff; }
+.btn.primary:hover { background: var(--accent-bright); }
+.btn:disabled { opacity: .55; cursor: progress; }
+
+/* ---------- Segment-Schalter (iOS) ---------- */
+.segmented {
+  display: grid; grid-auto-flow: column; grid-auto-columns: 1fr;
+  padding: 2px; border-radius: 9px; background: var(--fill);
+}
+.segmented label { position: relative; cursor: pointer; }
+.segmented input { position: absolute; opacity: 0; pointer-events: none; }
+.segmented span {
+  display: block; padding: 7px 8px; border-radius: 7px;
+  text-align: center; font-size: 13px; font-weight: 500; color: var(--ink);
+  transition: background .2s ease, box-shadow .2s ease;
+}
+.segmented input:checked + span {
+  background: var(--surface); font-weight: 600;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 12%), 0 3px 8px rgb(0 0 0 / 8%);
+}
+.segmented input:focus-visible + span { outline: 3px solid var(--accent-line); }
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}

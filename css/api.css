@@ -1,0 +1,131 @@
+/* API-Seiten: Kopfbereich, Doku, URL-Baukasten, JSON-Viewer */
+
+/* ---------- Kopf: Nachtblau mit Sternmuster ---------- */
+.api-top {
+  position: relative; overflow: hidden;
+  color: var(--on-night);
+  background:
+    radial-gradient(70% 120% at 85% 0%, rgb(226 191 122 / 20%), transparent 60%),
+    var(--pattern-night),
+    linear-gradient(160deg, var(--night), var(--night-2));
+  border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+}
+.api-top-inner { max-width: 980px; margin: 0 auto; padding: 24px 20px 32px; }
+.api-top h1 {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  margin-top: 14px; font: 700 34px/1.1 var(--font-display); letter-spacing: -.03em;
+}
+.api-top h1 .arabic { color: var(--gold-on-night); font-size: 28px; font-weight: 400; }
+.api-top p { margin-top: 8px; max-width: 620px; color: var(--on-night-muted); font-size: 15px; line-height: 1.5; }
+.back {
+  display: inline-flex; padding: 6px 12px; border-radius: 999px;
+  background: rgb(255 255 255 / 10%); color: var(--on-night);
+  font-size: 13px; font-weight: 500; text-decoration: none;
+}
+.back:hover { background: rgb(255 255 255 / 18%); }
+
+.api-main {
+  max-width: 980px; margin: 0 auto; padding: 22px 20px 40px;
+  display: grid; gap: 18px;
+}
+.panel {
+  padding: 24px; border-radius: var(--radius-xl);
+  min-width: 0;
+}
+.panel h2 { font: 700 22px var(--font-display); letter-spacing: -.02em; }
+.section-lead { margin-top: 6px; }
+code { font-family: var(--mono); font-size: .92em; }
+
+.method-tag {
+  display: inline-block; padding: 3px 7px; border-radius: 6px;
+  background: var(--accent); color: #fff;
+  font: 700 10px var(--mono); letter-spacing: .5px; vertical-align: middle;
+}
+
+/* ---------- URL-Baukasten ---------- */
+.builder { margin-top: 16px; display: grid; gap: 14px; }
+.b-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.b-row { display: grid; gap: 6px; min-width: 0; }
+.b-row > label, .b-row > .label { margin-left: 4px; color: var(--muted); font-size: 12px; font-weight: 500; }
+.b-row .segmented { max-width: 320px; }
+
+.url-box {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 12px 14px; border-radius: var(--radius-md);
+  background: var(--fill);
+}
+.url-box code { min-width: 0; overflow-wrap: anywhere; font-size: 12px; line-height: 1.6; }
+
+.b-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.preview { margin-top: 18px; }
+
+/* ---------- Referenz ---------- */
+.reference { margin-top: 14px; display: grid; gap: 12px; }
+.ref-card { padding: 16px; border: 1px solid var(--line); border-radius: var(--radius-md); min-width: 0; }
+.ref-head { display: flex; align-items: center; gap: 8px; }
+.ref-head code { font-size: 14px; font-weight: 700; }
+.ref-card > .muted { margin-top: 6px; }
+
+.param-table { width: 100%; margin-top: 12px; border-collapse: collapse; font-size: 12px; }
+.param-table th {
+  padding: 8px 10px; text-align: left; color: var(--muted);
+  font-size: 11px; font-weight: 700; border-bottom: 1px solid var(--line);
+}
+.param-table td { padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.param-table tr:last-child td { border-bottom: 0; }
+.param-table td:first-child { white-space: nowrap; }
+
+.examples { margin-top: 12px; display: grid; gap: 4px; }
+.examples a { font: 12px var(--mono); overflow-wrap: anywhere; text-decoration: none; }
+.examples a:hover { text-decoration: underline; }
+
+.footnote { margin-top: 14px; color: var(--faint); font-size: 11px; line-height: 1.55; }
+
+/* ---------- JSON-Viewer ---------- */
+.viewer { display: grid; gap: 12px; min-width: 0; }
+.viewer-head { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.viewer-url {
+  flex: 1 1 240px; min-width: 0; color: var(--muted);
+  font-size: 12px; overflow-wrap: anywhere;
+}
+.viewer.compact .viewer-url:empty { display: none; }
+.viewer-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.viewer-actions .btn { height: 32px; padding: 0 12px; }
+
+.status {
+  padding: 4px 10px; border-radius: 999px;
+  font: 700 12px var(--mono);
+}
+.status.ok { background: var(--accent-soft); color: var(--accent); }
+.status.warn { background: var(--warn-bg); color: var(--warn-ink); }
+.status.fail { background: color-mix(in srgb, var(--error) 15%, transparent); color: var(--error); }
+
+.json {
+  margin: 0; padding: 16px; max-height: 70vh; overflow: auto;
+  border-radius: var(--radius-md); background: #0f1a16; color: #d7e4dd;
+  font: 12.5px/1.6 var(--mono); tab-size: 2;
+}
+.j-key { color: #8fd1ae; }
+.j-str { color: #f2cf8a; }
+.j-num { color: #9ec9ff; }
+.j-bool { color: #f59fb5; }
+.j-null { color: #8b9a92; font-style: italic; }
+
+/* ---------- Reines JSON (Standard der Endpunkt-Seiten) ----------
+   Sieht aus wie eine im Browser geöffnete .json-Datei: kein Muster, keine Farben. */
+body.raw-mode {
+  background: Canvas; color: CanvasText;
+  letter-spacing: normal;
+}
+pre.raw {
+  margin: 0; padding: 8px;
+  font: 13px/1.4 monospace; white-space: pre-wrap; overflow-wrap: anywhere;
+}
+
+@media (max-width: 640px) {
+  .b-grid { grid-template-columns: 1fr; }
+  .api-main { padding: 12px; }
+  .panel { padding: 16px; }
+  .api-top h1 { font-size: 22px; }
+}

@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="de" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f5efe3" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#070b14" media="(prefers-color-scheme: dark)">
+  <meta name="description" content="Gebetszeiten für jeden Ort der Welt · Prayer times worldwide · مواقيت الصلاة لكل مكان في العالم">
+  <title>Gebetszeiten · Prayer Times Map</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/map.css">
+  <link rel="stylesheet" href="css/sidebar.css">
+  <link rel="stylesheet" href="css/prayers.css">
+  <link rel="stylesheet" href="css/i18n.css">
+</head>
+<body>
+  <header class="topbar glass">
+    <div class="brand-mark" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M14.5 3.2A9 9 0 1 0 20.8 15 7.2 7.2 0 0 1 14.5 3.2Z"/><path d="m18 4 .7 1.6 1.7.2-1.3 1.1.4 1.7L18 7.7l-1.5.9.4-1.7-1.3-1.1 1.7-.2Z"/></svg>
+    </div>
+    <div class="brand">
+      <h1 data-i18n="app.title">Gebetszeiten</h1>
+      <span class="arabic brand-tagline" lang="ar">مواقيت الصلاة</span>
+    </div>
+    <div class="segmented lang-switch" id="langGroup" role="radiogroup" data-i18n-aria-label="nav.language" aria-label="Sprache"></div>
+    <nav class="topnav" data-i18n-aria-label="nav.main" aria-label="Hauptnavigation">
+      <a href="api/index.html" data-i18n="nav.api">API</a>
+    </nav>
+  </header>
+
+  <main class="app-layout">
+    <section class="map-section" data-i18n-aria-label="map.region" aria-label="Weltkarte">
+      <div id="map"></div>
+
+      <form class="map-search" id="searchForm" role="search">
+        <div class="search-box glass">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input id="searchInput" type="search" autocomplete="off"
+                 data-i18n-placeholder="map.searchPlaceholder" placeholder="Stadt suchen"
+                 data-i18n-aria-label="map.searchLabel" aria-label="Ort suchen">
+          <button id="searchBtn" type="submit" data-i18n="map.searchButton">Suchen</button>
+        </div>
+        <ul class="search-results glass" id="searchResults" aria-live="polite"></ul>
+      </form>
+
+      <button id="locateBtn" class="locate-btn glass" type="button">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 3 3 10.5l7.5 3 3 7.5Z"/></svg>
+        <span data-i18n="map.locate">Mein Standort</span>
+      </button>
+      <div id="mapError" class="map-error" role="status"></div>
+    </section>
+
+    <aside class="sidebar glass">
+      <div class="panel-heading">
+        <span class="eyebrow" data-i18n="place.eyebrow">Standort</span>
+        <h2 id="placeName" data-i18n="place.none">Noch kein Ort gewählt</h2>
+        <p id="coordinates" class="muted bidi" data-i18n="place.hint">Suche eine Stadt oder tippe auf die Karte.</p>
+        <div class="date-info">
+          <span class="chip" id="gregorianDate">—</span>
+          <span class="chip hijri" id="hijriDate">—</span>
+        </div>
+      </div>
+
+      <div class="next-prayer" id="nextPrayer" hidden aria-live="polite">
+        <span class="eyebrow" data-i18n="next.eyebrow">Nächstes Gebet</span>
+        <span class="next-prayer-arabic" id="nextPrayerArabic" lang="ar"></span>
+        <span class="next-prayer-name" id="nextPrayerName">—</span>
+        <span class="countdown" id="nextPrayerCountdown">—</span>
+        <p class="next-prayer-at" id="nextPrayerAt"></p>
+      </div>
+
+      <div class="prayer-list" id="prayerList">
+        <div class="empty-state">
+          <div class="empty-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M14.5 3.2A9 9 0 1 0 20.8 15 7.2 7.2 0 0 1 14.5 3.2Z"/></svg>
+          </div>
+          <span class="arabic" lang="ar">بسم الله</span>
+          <strong data-i18n="empty.title">Deine Gebetszeiten erscheinen hier</strong>
+          <span data-i18n="empty.text">Suche eine Stadt oder wähle einen Ort auf der Karte.</span>
+        </div>
+      </div>
+
+      <div class="ornament" aria-hidden="true"><span></span></div>
+
+      <div class="controls">
+        <div class="control-group">
+          <label for="dateInput" data-i18n="controls.date">Datum</label>
+          <div class="date-row">
+            <input id="dateInput" class="field" type="date">
+            <button id="todayBtn" class="btn" type="button" data-i18n="controls.today">Heute</button>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <label for="methodSelect" data-i18n="controls.method">Berechnungsmethode</label>
+          <select id="methodSelect" class="field"></select>
+        </div>
+
+        <div class="control-group">
+          <span class="label" id="madhabLabel" data-i18n="controls.madhab">Asr-Berechnung</span>
+          <div class="segmented" id="madhabGroup" role="radiogroup" aria-labelledby="madhabLabel"></div>
+        </div>
+      </div>
+
+      <div class="group">
+        <div class="info-line">
+          <span data-i18n="info.timezone">Zeitzone</span>
+          <strong id="timezone" class="bidi">—</strong>
+        </div>
+        <div class="info-line">
+          <span data-i18n="info.localTime">Ortszeit</span>
+          <strong id="localTime">—</strong>
+        </div>
+        <div class="info-line" id="qiblaLine" hidden>
+          <span data-i18n="info.qibla">Qibla</span>
+          <strong>
+            <span id="qiblaArrow" class="qibla-arrow" aria-hidden="true">
+              <svg viewBox="0 0 12 12" fill="currentColor"><path d="M6 0 10 11 6 8.5 2 11Z"/></svg>
+            </span><span id="qiblaValue">—</span>
+          </strong>
+        </div>
+      </div>
+
+      <p class="footnote" data-i18n="footnote">
+        Berechnet im Browser. Zeiten können je nach Moschee und Methode leicht abweichen.
+      </p>
+    </aside>
+  </main>
+
+  <footer>
+    <span data-i18n="footer.credits">Kartendaten © OpenStreetMap-Mitwirkende · Leaflet · Nominatim</span> ·
+    <a href="api/index.html" data-i18n="footer.api">JSON-API</a>
+  </footer>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script type="importmap">
+    {
+      "imports": {
+        "adhan": "https://esm.sh/adhan@4.4.3",
+        "tz-lookup": "https://esm.sh/tz-lookup@6.1.25"
+      }
+    }
+  </script>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

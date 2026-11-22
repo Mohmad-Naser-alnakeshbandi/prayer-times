@@ -1,0 +1,38 @@
+/* Sprachen: Umschalter, arabische Schrift, Rechts-nach-links-Anpassungen */
+
+/* ---------- Sprachumschalter in der Kopfzeile ---------- */
+.lang-switch { flex: none; grid-auto-columns: minmax(40px, auto); }
+.lang-switch span { padding: 5px 10px; font-size: 12px; font-weight: 600; }
+.lang-switch span:lang(ar) { font-family: var(--font-arabic); font-size: 14px; line-height: 1.1; }
+
+/* ---------- Arabische Oberfläche ---------- */
+:root[lang="ar"] {
+  --font: -apple-system, BlinkMacSystemFont, "SF Arabic", "Noto Sans Arabic", "Inter", "Segoe UI", system-ui, sans-serif;
+  --font-display: -apple-system, BlinkMacSystemFont, "SF Arabic", "Noto Sans Arabic", "Inter", "Segoe UI", system-ui, sans-serif;
+}
+/* Zeichenabstand trennt arabische Buchstaben – überall abschalten */
+:root[lang="ar"] * { letter-spacing: 0 !important; }
+:root[lang="ar"] .eyebrow { text-transform: none; font-size: 12px; }
+:root[lang="ar"] .panel-heading h2 { line-height: 1.35; }
+:root[lang="ar"] .prayer-name { font-size: 17px; }
+/* Der Titel ist schon arabisch – Untertitel nicht doppelt zeigen */
+:root[lang="ar"] .brand-tagline { display: none; }
+
+/* ---------- Rechts-nach-links ---------- */
+/* Leaflet rechnet nur links-nach-rechts korrekt – die Karte selbst nie spiegeln */
+#map, .leaflet-container { direction: ltr; }
+[dir="rtl"] select.field { background-position: left 12px center; }
+[dir="rtl"] .search-box svg { transform: scaleX(-1); }
+[dir="rtl"] .locate-btn svg { transform: scaleX(-1); }
+
+/* Zahlen, Uhrzeiten und Koordinaten immer links-nach-rechts lesen */
+.prayer-time, .countdown, #localTime, #qiblaValue {
+  direction: ltr; unicode-bidi: isolate;
+}
+/* Richtung nach Inhalt (z. B. Hinweistext vs. Koordinaten) */
+.bidi { unicode-bidi: plaintext; }
+
+@media (max-width: 560px) {
+  .topnav { display: none; }   /* API-Link bleibt im Footer erreichbar */
+  .lang-switch span { padding: 5px 8px; }
+}

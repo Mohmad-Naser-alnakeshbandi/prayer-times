@@ -1,0 +1,18 @@
+{
+  "name": "prayer-times-map",
+  "version": "1.0.0",
+  "description": "Gebetszeiten weltweit – Karte, Browser-API und JSON-API (Cloudflare Worker)",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "dependencies": {
+    "adhan": "4.4.3",
+    "tz-lookup": "6.1.25"
+  },
+  "devDependencies": {
+    "wrangler": "^4.166.0"
+  }
+}
