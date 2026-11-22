@@ -1,0 +1,36 @@
+# Prüft regelmäßig, ob die Live-API erreichbar ist und korrekt rechnet.
+# Der Status erscheint als Badge in den READMEs.
+name: Service health
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"   # alle 30 Minuten
+  workflow_dispatch:          # manuell im Tab "Actions" startbar
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      BASE: https://prayer-times-map.salah-times.workers.dev
+    steps:
+      - name: Health endpoint
+        run: |
+          body=$(curl -fsS --retry 3 --retry-delay 5 "$BASE/api/health")
+          echo "$body" | jq .
+          test "$(echo "$body" | jq -r .data.status)" = "ok"
+
+      - name: Prayer times endpoint
+        run: |
+          body=$(curl -fsS --retry 3 --retry-delay 5 "$BASE/api/times?lat=21.4225&lon=39.8262&method=UMM_AL_QURA")
+          echo "$body" | jq '.data.times'
+          test "$(echo "$body" | jq -r .status)" = "200"
+          test "$(echo "$body" | jq -r .data.times.dhuhr)" != "null"
+
+      - name: Website
+        run: curl -fsS -o /dev/null -H "Accept: text/html" "$BASE/"

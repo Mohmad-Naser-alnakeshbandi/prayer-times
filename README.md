@@ -1,61 +1,97 @@
 # Prayer Times Map · مواقيت الصلاة
 
-Gebetszeiten für jeden Ort der Welt – als interaktive Karte und als JSON-API.
-Die Berechnung erfolgt mit [adhan](https://github.com/batoulapps/adhan-js), Zeitzonen über
-[tz-lookup](https://github.com/darkskyapp/tz-lookup), Ortsnamen über
-[Nominatim](https://nominatim.org/) (OpenStreetMap).
+**English** · [Deutsch](README.de.md) · [العربية](README.ar.md)
 
-**Live:** <https://prayer-times-map.salah-times.workers.dev/>
+[![API](https://img.shields.io/website?url=https%3A%2F%2Fprayer-times-map.salah-times.workers.dev%2Fapi%2Fhealth&label=API&up_message=online&down_message=offline)](https://prayer-times-map.salah-times.workers.dev/api/health)
+[![Self-test](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fprayer-times-map.salah-times.workers.dev%2Fapi%2Fhealth&query=%24.data.status&label=self-test&color=brightgreen)](https://prayer-times-map.salah-times.workers.dev/api/health)
+[![Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fprayer-times-map.salah-times.workers.dev%2Fapi%2Fhealth&query=%24.data.version&label=version&color=blue)](https://prayer-times-map.salah-times.workers.dev/api/health)
+[![Service health](https://github.com/Mohmad-Naser-alnakeshbandi/prayer-times/actions/workflows/health.yml/badge.svg)](https://github.com/Mohmad-Naser-alnakeshbandi/prayer-times/actions/workflows/health.yml)
+
+Prayer times for any place in the world – as an interactive map and as a JSON API.
+Calculated with [adhan](https://github.com/batoulapps/adhan-js), time zones via
+[tz-lookup](https://github.com/darkskyapp/tz-lookup), place names via
+[Nominatim](https://nominatim.org/) (OpenStreetMap).
 
 | | URL |
 |---|---|
-| Karte | <https://prayer-times-map.salah-times.workers.dev/> |
-| API-Dokumentation | <https://prayer-times-map.salah-times.workers.dev/api/> |
-| Beispiel (JSON) | <https://prayer-times-map.salah-times.workers.dev/api/times?city=Pforzheim&country=Germany&method=TURKEY> |
+| Map | <https://prayer-times-map.salah-times.workers.dev/> |
+| API docs | <https://prayer-times-map.salah-times.workers.dev/api/> |
+| Example (JSON) | <https://prayer-times-map.salah-times.workers.dev/api/times?city=Pforzheim&country=Germany&method=TURKEY> |
+| Service status | <https://prayer-times-map.salah-times.workers.dev/api/health> |
 
-## Funktionen
+## Service status
 
-**Karte**
-- Ort per Klick auf die Karte, Stadtsuche oder Geräte-Standort wählen
-- Fajr, Sonnenaufgang, Dhuhr, Asr, Maghrib, Isha – mit Countdown zum nächsten Gebet
-- 10 Berechnungsmethoden (u. a. MWL, Umm al-Qura, Diyanet) und Asr nach Standard oder Hanafi
-- Hijri-Datum, Ortszeit, Zeitzone und Qibla-Richtung
-- Sprachen **Deutsch, English, العربية** (inkl. Rechts-nach-links-Layout)
-- Hell- und Dunkelmodus nach Systemeinstellung, optimiert für Smartphone
-- Teilbare Links, z. B. `/?lat=48.8908&lon=8.6987&lang=ar`
-- Methode, Madhab und Sprache werden im Browser gespeichert
+| Badge | Meaning |
+|---|---|
+| **API** | Is the API reachable right now? (checked live on every page view) |
+| **self-test** | Result of `/api/health`: `ok` or `degraded` |
+| **version** | Currently deployed version |
+| **Service health** | GitHub Action that calls the live API every 30 minutes and checks real results |
+
+`GET /api/health` runs a self-test inside the worker (time zone lookup, prayer time
+calculation, Qibla) without calling external services:
+
+```json
+{
+  "status": 200,
+  "endpoint": "health",
+  "data": {
+    "status": "ok",
+    "service": "prayer-times-map",
+    "version": "1.1.0",
+    "time": "2026-11-22T20:15:00.000Z",
+    "durationMs": 2,
+    "checks": { "timezone": "ok", "calculation": "ok", "qibla": "ok" }
+  }
+}
+```
+
+If a check fails, the endpoint answers with HTTP `503` and `"status": "degraded"`.
+
+## Features
+
+**Map**
+- Choose a place by clicking the map, searching for a city or using your device location
+- Fajr, sunrise, Dhuhr, Asr, Maghrib, Isha – with a countdown to the next prayer
+- 10 calculation methods (e.g. MWL, Umm al-Qura, Diyanet) and Asr by standard or Hanafi
+- Hijri date, local time, time zone and Qibla direction
+- Languages **Deutsch, English, العربية** (including right-to-left layout)
+- Light and dark mode following the system setting, optimised for phones
+- Shareable links, e.g. `/?lat=48.8908&lon=8.6987&lang=ar`
+- Method, madhab and language are remembered in the browser
 
 **API**
-- Echtes JSON (`application/json`) für Postman, curl und andere Programme
-- CORS aktiviert – auch aus anderen Webseiten per `fetch()` nutzbar
-- Ort über Koordinaten oder Stadt/Land
+- Real JSON (`application/json`) for Postman, curl and other programs
+- CORS enabled – usable via `fetch()` from other websites
+- Location by coordinates or by city/country
 
-## JSON-API
+## JSON API
 
-Basis-URL: `https://prayer-times-map.salah-times.workers.dev`
+Base URL: `https://prayer-times-map.salah-times.workers.dev`
 
-| Endpunkt | Beschreibung | Parameter |
+| Endpoint | Description | Parameters |
 |---|---|---|
-| `GET /api/times` | Gebetszeiten eines Tages | Ort, `date`, `method`, `madhab` |
-| `GET /api/calendar` | Gebetszeiten eines Monats | Ort, `month`, `method`, `madhab` |
-| `GET /api/qibla` | Qibla-Richtung in Grad ab Norden | Ort |
-| `GET /api/methods` | Alle Methoden und Madhabs | – |
-| `GET /api` | Übersicht der Endpunkte | – |
+| `GET /api/times` | Prayer times for one day | location, `date`, `method`, `madhab` |
+| `GET /api/calendar` | Prayer times for a month | location, `month`, `method`, `madhab` |
+| `GET /api/qibla` | Qibla direction in degrees from north | location |
+| `GET /api/methods` | All methods and madhabs | – |
+| `GET /api/health` | Service status (self-test) | – |
+| `GET /api` | Overview of all endpoints | – |
 
-### Parameter
+### Parameters
 
-| Parameter | Format | Standard |
+| Parameter | Format | Default |
 |---|---|---|
-| `lat`, `lon` | Dezimalgrad, z. B. `48.89`, `8.70` | – |
-| `city`, `country` | Freitext, z. B. `Pforzheim`, `Germany` (`country` optional) | – |
-| `date` | `YYYY-MM-DD` | heute am Ort |
-| `month` | `YYYY-MM` | aktueller Monat am Ort |
+| `lat`, `lon` | Decimal degrees, e.g. `48.89`, `8.70` | – |
+| `city`, `country` | Free text, e.g. `Pforzheim`, `Germany` (`country` optional) | – |
+| `date` | `YYYY-MM-DD` | today at the location |
+| `month` | `YYYY-MM` | current month at the location |
 | `method` | `MWL`, `EGYPT`, `KARACHI`, `UMM_AL_QURA`, `DUBAI`, `QATAR`, `KUWAIT`, `SINGAPORE`, `TURKEY`, `NORTH_AMERICA` | `MWL` |
-| `madhab` | `SHAFI` (Schafi'i, Maliki, Hanbali) oder `HANAFI` | `SHAFI` |
+| `madhab` | `SHAFI` (Shafi'i, Maliki, Hanbali) or `HANAFI` | `SHAFI` |
 
-Der Ort wird entweder über `lat` + `lon` **oder** über `city` (optional mit `country`) angegeben.
+The location is given either as `lat` + `lon` **or** as `city` (optionally with `country`).
 
-### Beispiel
+### Example
 
 ```bash
 curl "https://prayer-times-map.salah-times.workers.dev/api/times?lat=48.89&lon=8.70&date=2026-11-22&method=TURKEY"
@@ -80,38 +116,39 @@ curl "https://prayer-times-map.salah-times.workers.dev/api/times?lat=48.89&lon=8
 }
 ```
 
-`nextPrayer` ist nur gesetzt, wenn `date` am Ort „heute“ ist. Zeiten, die es an einem Ort nicht
-gibt (z. B. Isha im Polarsommer), sind `null`.
+`nextPrayer` is only set when `date` is "today" at the location. Times that do not exist at a
+place (e.g. Isha during the polar summer) are `null`. Names and messages in the API are in German.
 
-### Fehler
+### Errors
 
-Fehler kommen mit passendem HTTP-Status im selben Format:
+Errors use a matching HTTP status and the same format:
 
 ```json
 { "status": 400, "endpoint": "times", "error": { "code": "invalid_lat", "message": "lat muss eine Zahl zwischen -90 und 90 sein." } }
 ```
 
-| Status | Code | Bedeutung |
+| Status | Code | Meaning |
 |---|---|---|
-| 400 | `missing_location` | weder `lat`/`lon` noch `city` angegeben |
-| 400 | `invalid_lat`, `invalid_lon` | Koordinate fehlt oder außerhalb des Bereichs |
-| 400 | `invalid_date`, `invalid_month` | falsches Datumsformat |
-| 400 | `invalid_method`, `invalid_madhab` | unbekannter Wert (erlaubte Werte stehen in der Meldung) |
-| 404 | `city_not_found` | Stadt nicht gefunden |
-| 405 | `method_not_allowed` | nur `GET` ist erlaubt |
-| 422 | `timezone_not_found` | keine Zeitzone für den Ort |
-| 502 | `geocoding_failed` | Ortssuche (Nominatim) nicht erreichbar |
+| 400 | `missing_location` | neither `lat`/`lon` nor `city` given |
+| 400 | `invalid_lat`, `invalid_lon` | coordinate missing or out of range |
+| 400 | `invalid_date`, `invalid_month` | wrong date format |
+| 400 | `invalid_method`, `invalid_madhab` | unknown value (allowed values are listed in the message) |
+| 404 | `city_not_found` | city not found |
+| 405 | `method_not_allowed` | only `GET` is allowed |
+| 422 | `timezone_not_found` | no time zone for this location |
+| 502 | `geocoding_failed` | place search (Nominatim) unavailable |
+| 503 | – | `/api/health` self-test failed |
 
-### Hinweise
+### Notes
 
-- Die berechneten Zeiten können von lokalen Moschee-Kalendern abweichen (eigene Winkel oder
-  Minuten-Aufschläge). In Deutschland liegt oft `TURKEY` (Diyanet) am nächsten.
-- Stadtsuchen nutzen den öffentlichen Dienst Nominatim und werden 30 Tage zwischengespeichert.
-  Bitte keine Massenabfragen mit wechselnden Städten – für viele Anfragen besser `lat`/`lon` nutzen.
+- Calculated times can differ from local mosque timetables (custom angles or minute offsets).
+  In Germany, `TURKEY` (Diyanet) is often the closest match.
+- City searches use the public Nominatim service and are cached for 30 days. Please avoid bulk
+  requests with many different cities – use `lat`/`lon` for high volumes.
 
-## Lokal entwickeln
+## Local development
 
-Voraussetzung: Node.js 20 oder neuer.
+Requirement: Node.js 20 or newer.
 
 ```bash
 npm install
@@ -120,55 +157,52 @@ npm run dev
 
 | | URL |
 |---|---|
-| Karte | <http://127.0.0.1:8787/> |
-| API-Doku | <http://127.0.0.1:8787/api/> |
+| Map | <http://127.0.0.1:8787/> |
+| API docs | <http://127.0.0.1:8787/api/> |
 | JSON | <http://127.0.0.1:8787/api/times?lat=48.89&lon=8.70&method=TURKEY> |
 
-Ohne Worker (z. B. mit VS Code Live Server) funktionieren Karte und die Browser-API-Seiten
-(`api/times.html` usw.), aber Postman und curl erhalten dort nur HTML, weil das JSON erst im
-Browser per JavaScript entsteht. Mit `&view=1` zeigen diese Seiten eine formatierte Ansicht.
+Without the worker (e.g. VS Code Live Server) the map and the browser API pages
+(`api/times.html` etc.) work, but Postman and curl only receive HTML there, because the JSON is
+created in the browser by JavaScript. With `&view=1` these pages show a formatted view.
 
-## Veröffentlichen
+## Deployment
 
-Gehostet als [Cloudflare Worker](https://developers.cloudflare.com/workers/) mit statischen Assets.
+Hosted as a [Cloudflare Worker](https://developers.cloudflare.com/workers/) with static assets.
 
 ```bash
-npx wrangler login   # einmalig
+npx wrangler login   # once
 npm run deploy
 ```
 
-Der Worker beantwortet `/api` und `/api/*` (JSON) und liefert alles andere als statische
-Dateien aus. Ruft ein Browser `/api/` auf, erhält er die Dokumentation, Programme die
-JSON-Übersicht. Nicht veröffentlicht werden die in [`.assetsignore`](.assetsignore)
-gelisteten Dateien (z. B. `node_modules`, `worker`, `wrangler.toml`).
+The worker answers `/api` and `/api/*` (JSON) and serves everything else as static files.
+A browser opening `/api/` gets the documentation, programs get the JSON overview. Files listed
+in [`.assetsignore`](.assetsignore) (e.g. `node_modules`, `worker`, `wrangler.toml`) are not published.
 
-In [`wrangler.toml`](wrangler.toml) steht unter `NOMINATIM_USER_AGENT` die Kennung, mit der
-Anfragen an Nominatim gesendet werden – bei einer neuen Domain bitte anpassen.
+`NOMINATIM_USER_AGENT` in [`wrangler.toml`](wrangler.toml) identifies requests to Nominatim –
+please update it when using a different domain.
 
-## Projektstruktur
+## Project structure
 
 ```
-index.html                Karte
+index.html                Map
 css/                      Styles (base, layout, map, sidebar, prayers, i18n, api)
 js/
-  main.js                 Einstieg der Karte
-  config.js               Methoden, Madhabs, Gebete, externe Dienste
-  core/                   Zustand, Zeit-Helfer, Einstellungen, Mehrsprachigkeit
-  i18n/                   Übersetzungen (de, en, ar)
-  services/               Berechnung, Qibla, Zeitzone, Ortssuche, Geräte-Standort
-  ui/                     Karte, Suche, Eingaben, Seitenleiste, Meldungen
-  api/                    API-Logik (gemeinsam für Browser-Seiten und Worker)
-api/                      API-Dokumentation und Browser-API-Seiten
-worker/index.js           Cloudflare Worker (JSON-API)
-wrangler.toml             Worker-Konfiguration
+  main.js                 Map entry point
+  config.js               Methods, madhabs, prayers, external services
+  core/                   State, time helpers, settings, translations
+  i18n/                   Translations (de, en, ar)
+  services/               Calculation, Qibla, time zone, place search, device location
+  ui/                     Map, search, controls, sidebar, messages
+  api/                    API logic (shared by browser pages and worker)
+api/                      API documentation and browser API pages
+worker/index.js           Cloudflare Worker (JSON API, health check)
+.github/workflows/        Scheduled service health check
+wrangler.toml             Worker configuration
 ```
 
-Die Berechnungslogik in `js/services/` und `js/api/` wird von Karte, Browser-API und Worker
-gemeinsam genutzt.
+## Credits & data
 
-## Lizenzen & Daten
-
-- Kartendaten © [OpenStreetMap](https://www.openstreetmap.org/copyright)-Mitwirkende
-- Karte: [Leaflet](https://leafletjs.com/)
-- Ortssuche: [Nominatim](https://nominatim.org/) –
-  [Nutzungsrichtlinie](https://operations.osmfoundation.org/policies/nominatim/)
+- Map data © [OpenStreetMap](https://www.openstreetmap.org/copyright) contributors
+- Map: [Leaflet](https://leafletjs.com/)
+- Place search: [Nominatim](https://nominatim.org/) –
+  [usage policy](https://operations.osmfoundation.org/policies/nominatim/)

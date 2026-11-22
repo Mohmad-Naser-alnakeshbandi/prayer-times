@@ -4,6 +4,10 @@
 import { execute } from "../js/api/run.js";
 import { readQuery } from "../js/api/params.js";
 import { configureGeocoding } from "../js/services/geocode.js";
+import { computePrayerDay, qiblaDirection } from "../js/services/prayer-times.js";
+import { findTimeZone } from "../js/services/timezone.js";
+
+const SERVICE = { name: "prayer-times-map", version: "1.1.0" };
 
 const ROUTES = {
   "/api/times": "times",
@@ -49,6 +53,46 @@ function geocodeCache(ctx) {
   };
 }
 
+/**
+ * Selbsttest ohne externe Dienste: Zeitzone, Gebetszeiten und Qibla für Mekka
+ * (dort gibt es das ganze Jahr alle Zeiten). Nominatim wird bewusst nicht geprüft.
+ */
+function health() {
+  const started = Date.now();
+  const checks = {};
+  const run = (name, fn) => {
+    try { checks[name] = fn() ? "ok" : "failed"; } catch { checks[name] = "failed"; }
+  };
+
+  run("timezone", () => findTimeZone(21.4225, 39.8262) === "Asia/Riyadh");
+  run("calculation", () => {
+    const { times } = computePrayerDay({
+      lat: 21.4225, lon: 39.8262, timeZone: "Asia/Riyadh",
+      dateString: "2026-01-01", methodId: "UMM_AL_QURA", madhabId: "SHAFI"
+    });
+    return ["fajr", "dhuhr", "asr", "maghrib", "isha"].every((k) => times[k] instanceof Date && !isNaN(times[k]));
+  });
+  run("qibla", () => Math.abs(qiblaDirection(48.89, 8.70) - 126.8) < 1);
+
+  const ok = Object.values(checks).every((v) => v === "ok");
+  const status = ok ? 200 : 503;
+  return {
+    status,
+    body: {
+      status,
+      endpoint: "health",
+      data: {
+        status: ok ? "ok" : "degraded",
+        service: SERVICE.name,
+        version: SERVICE.version,
+        time: new Date().toISOString(),
+        durationMs: Date.now() - started,
+        checks
+      }
+    }
+  };
+}
+
 function overview(origin) {
   const ex = (path) => `${origin}${path}`;
   return {
@@ -69,7 +113,9 @@ function overview(origin) {
           params: ["lat", "lon", "city", "country"],
           example: ex("/api/qibla?city=Wien&country=Austria") },
         { path: "/api/methods", description: "Berechnungsmethoden und Madhabs",
-          params: [], example: ex("/api/methods") }
+          params: [], example: ex("/api/methods") },
+        { path: "/api/health", description: "Service-Status (Selbsttest)",
+          params: [], example: ex("/api/health") }
       ]
     }
   };
@@ -81,6 +127,11 @@ export default {
     const path = url.pathname.replace(/\/+$/, "") || "/";
 
     if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: CORS });
+
+    if (path === "/api/health") {
+      const { status, body } = health();
+      return json(status, body);
+    }
 
     const name = ROUTES[path];
     if (!name && path !== "/api") {

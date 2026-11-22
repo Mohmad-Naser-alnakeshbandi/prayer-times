@@ -10,3 +10,6 @@ package-lock.json
 README.md
 .vscode
 .dev.vars
+README.*.md
+.github
+.git
