@@ -3,6 +3,8 @@
 import { readQuery } from "./params.js";
 import { execute } from "./run.js";
 import { renderRaw, renderViewer } from "./view.js";
+import { detectLanguage, setLanguage, t } from "../core/i18n.js";
+import { loadSettings } from "../core/settings.js";
 
 const name = document.body.dataset.endpoint;
 const app = document.getElementById("app");
@@ -21,6 +23,8 @@ document.documentElement.dataset.status = String(result.status);
 if (!pretty) {
   renderRaw(app, result);
 } else {
+  // Oberfläche in ?lang= bzw. der zuletzt gewählten Sprache
+  setLanguage(detectLanguage(loadSettings().lang));
   document.body.classList.remove("raw-mode");
   document.title = `${result.status} · ${name} · Prayer Times API`;
 
@@ -30,7 +34,7 @@ if (!pretty) {
   app.innerHTML = `
     <header class="api-top">
       <div class="api-top-inner">
-        <a class="back" href="index.html">← API-Dokumentation</a>
+        <a class="back" href="index.html">${t("viewer.backToDocs")}</a>
         <h1><span class="method-tag">GET</span> <span id="epName"></span></h1>
       </div>
     </header>

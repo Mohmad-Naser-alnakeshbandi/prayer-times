@@ -38,7 +38,7 @@ Qibla), ohne externe Dienste aufzurufen:
   "data": {
     "status": "ok",
     "service": "prayer-times-map",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "time": "2026-11-22T20:15:00.000Z",
     "durationMs": 2,
     "checks": { "timezone": "ok", "calculation": "ok", "qibla": "ok" }
@@ -88,6 +88,7 @@ Basis-URL: `https://prayer-times-map.salah-times.workers.dev`
 | `month` | `YYYY-MM` | aktueller Monat am Ort |
 | `method` | `MWL`, `EGYPT`, `KARACHI`, `UMM_AL_QURA`, `DUBAI`, `QATAR`, `KUWAIT`, `SINGAPORE`, `TURKEY`, `NORTH_AMERICA` | `MWL` |
 | `madhab` | `SHAFI` (Schafi'i, Maliki, Hanbali) oder `HANAFI` | `SHAFI` |
+| `lang` | `de`, `en` oder `ar` – Sprache für Methoden- und Madhab-Namen, Ortsnamen, Himmelsrichtungen und Fehlermeldungen | `de` |
 
 Der Ort wird entweder über `lat` + `lon` **oder** über `city` (optional mit `country`) angegeben.
 

@@ -4,10 +4,11 @@
 import { execute } from "../js/api/run.js";
 import { readQuery } from "../js/api/params.js";
 import { configureGeocoding } from "../js/services/geocode.js";
+import { API_LANGUAGES, DEFAULT_API_LANGUAGE, overviewText } from "../js/api/messages.js";
 import { computePrayerDay, qiblaDirection } from "../js/services/prayer-times.js";
 import { findTimeZone } from "../js/services/timezone.js";
 
-const SERVICE = { name: "prayer-times-map", version: "1.1.0" };
+const SERVICE = { name: "prayer-times-map", version: "1.2.0" };
 
 const ROUTES = {
   "/api/times": "times",
@@ -93,28 +94,30 @@ function health() {
   };
 }
 
-function overview(origin) {
+function overview(origin, lang) {
   const ex = (path) => `${origin}${path}`;
+  const text = overviewText(lang);
   return {
     status: 200,
     endpoint: "index",
     data: {
       name: "Prayer Times API",
-      format: "JSON (application/json), CORS aktiviert",
-      location: "lat & lon ODER city (+ optional country)",
+      format: "JSON (application/json), CORS",
+      location: text.location,
+      languages: API_LANGUAGES,
       endpoints: [
-        { path: "/api/times", description: "Gebetszeiten eines Tages",
-          params: ["lat", "lon", "city", "country", "date=YYYY-MM-DD", "method", "madhab"],
+        { path: "/api/times", description: text.times,
+          params: ["lat", "lon", "city", "country", "date=YYYY-MM-DD", "method", "madhab", "lang"],
           example: ex("/api/times?city=Pforzheim&country=Germany&method=TURKEY") },
-        { path: "/api/calendar", description: "Gebetszeiten eines Monats",
-          params: ["lat", "lon", "city", "country", "month=YYYY-MM", "method", "madhab"],
+        { path: "/api/calendar", description: text.calendar,
+          params: ["lat", "lon", "city", "country", "month=YYYY-MM", "method", "madhab", "lang"],
           example: ex("/api/calendar?lat=48.89&lon=8.70&month=2026-12&method=TURKEY") },
-        { path: "/api/qibla", description: "Qibla-Richtung in Grad",
-          params: ["lat", "lon", "city", "country"],
+        { path: "/api/qibla", description: text.qibla,
+          params: ["lat", "lon", "city", "country", "lang"],
           example: ex("/api/qibla?city=Wien&country=Austria") },
-        { path: "/api/methods", description: "Berechnungsmethoden und Madhabs",
-          params: [], example: ex("/api/methods") },
-        { path: "/api/health", description: "Service-Status (Selbsttest)",
+        { path: "/api/methods", description: text.methods,
+          params: ["lang"], example: ex("/api/methods?lang=en") },
+        { path: "/api/health", description: text.health,
           params: [], example: ex("/api/health") }
       ]
     }
@@ -149,7 +152,8 @@ export default {
       // Browser (Accept: text/html) → Doku-Seite; Postman/curl → JSON-Übersicht
       const wantsHtml = (request.headers.get("Accept") ?? "").includes("text/html");
       if (wantsHtml && env.ASSETS) return env.ASSETS.fetch(new Request(new URL("/api/", url), request));
-      return json(200, overview(url.origin));
+      const lang = String(url.searchParams.get("lang") ?? "").toLowerCase();
+      return json(200, overview(url.origin, API_LANGUAGES.includes(lang) ? lang : DEFAULT_API_LANGUAGE));
     }
 
     // Nominatim verlangt einen erkennbaren User-Agent

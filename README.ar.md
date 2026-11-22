@@ -46,7 +46,7 @@
   "data": {
     "status": "ok",
     "service": "prayer-times-map",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "time": "2026-11-22T20:15:00.000Z",
     "durationMs": 2,
     "checks": { "timezone": "ok", "calculation": "ok", "qibla": "ok" }
@@ -96,6 +96,7 @@
 | `month` | `YYYY-MM` | الشهر الحالي في المكان المحدد |
 | `method` | `MWL`، `EGYPT`، `KARACHI`، `UMM_AL_QURA`، `DUBAI`، `QATAR`، `KUWAIT`، `SINGAPORE`، `TURKEY`، `NORTH_AMERICA` | `MWL` |
 | `madhab` | `SHAFI` (الشافعي والمالكي والحنبلي) أو `HANAFI` (الحنفي) | `SHAFI` |
+| `lang` | `de` أو `en` أو `ar` – لغة أسماء الطرق والمذاهب والأماكن والاتجاهات ورسائل الخطأ | `de` |
 
 يُحدَّد المكان إما بـ `lat` و`lon` **أو** بـ `city` (مع `country` اختياريًا).
 
@@ -126,7 +127,7 @@ curl "https://prayer-times-map.salah-times.workers.dev/api/times?lat=21.4225&lon
 <div dir="rtl">
 
 يظهر `nextPrayer` فقط إذا كان `date` هو «اليوم» في المكان المحدد. الأوقات غير الموجودة في
-مكان ما (مثل العشاء في صيف المناطق القطبية) تكون `null`. أسماء الطرق ورسائل الخطأ في الواجهة البرمجية باللغة الألمانية.
+مكان ما (مثل العشاء في صيف المناطق القطبية) تكون `null`. الأسماء والرسائل بالألمانية افتراضيًا – أضف `lang=ar` للعربية أو `lang=en` للإنجليزية.
 
 ### الأخطاء
 

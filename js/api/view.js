@@ -1,4 +1,5 @@
 // Darstellung von API-Antworten: Roh-JSON oder formatierter Viewer.
+import { t } from "../core/i18n.js";
 
 const escapeHtml = (text) =>
   text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -23,10 +24,7 @@ function statusClass(status) {
 }
 
 function statusText(status) {
-  return {
-    200: "OK", 400: "Ungültige Anfrage", 404: "Nicht gefunden",
-    422: "Nicht verarbeitbar", 500: "Interner Fehler", 502: "Dienst nicht erreichbar"
-  }[status] ?? "";
+  return t("viewer.status")[status] ?? "";
 }
 
 export function renderRaw(container, result) {
@@ -51,9 +49,9 @@ export function renderViewer(container, result, options = {}) {
         <span class="status ${cls}">${result.status} ${statusText(result.status)}</span>
         <code class="viewer-url"></code>
         <div class="viewer-actions">
-          <button class="btn" type="button" data-action="copy">Kopieren</button>
-          <button class="btn" type="button" data-action="download">Download</button>
-          ${options.rawUrl ? `<a class="btn" data-action="raw">Roh-JSON</a>` : ""}
+          <button class="btn" type="button" data-action="copy">${t("viewer.copy")}</button>
+          <button class="btn" type="button" data-action="download">${t("viewer.download")}</button>
+          ${options.rawUrl ? `<a class="btn" data-action="raw">${t("viewer.raw")}</a>` : ""}
         </div>
       </div>
       <pre class="json">${highlightJson(json)}</pre>
@@ -66,11 +64,11 @@ export function renderViewer(container, result, options = {}) {
   copyBtn.addEventListener("click", async () => {
     try {
       await navigator.clipboard.writeText(json);
-      copyBtn.textContent = "Kopiert ✓";
+      copyBtn.textContent = t("viewer.copied");
     } catch {
-      copyBtn.textContent = "Nicht möglich";
+      copyBtn.textContent = t("viewer.copyFailed");
     }
-    setTimeout(() => { copyBtn.textContent = "Kopieren"; }, 1500);
+    setTimeout(() => { copyBtn.textContent = t("viewer.copy"); }, 1500);
   });
 
   container.querySelector('[data-action="download"]').addEventListener("click", () => {

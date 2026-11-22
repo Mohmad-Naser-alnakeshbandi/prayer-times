@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="de">
+<html lang="de" dir="ltr" data-i18n-title="docs.metaTitle">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,6 +7,7 @@
   <title>Prayer Times API</title>
   <link rel="stylesheet" href="../css/base.css">
   <link rel="stylesheet" href="../css/api.css">
+  <link rel="stylesheet" href="../css/i18n.css">
   <script type="importmap">
     {
       "imports": {
@@ -20,61 +21,72 @@
   <div id="app">
     <header class="api-top">
       <div class="api-top-inner">
-        <a class="back" href="../index.html">← Zur Karte</a>
-        <h1>Prayer Times API <span class="arabic" lang="ar">مواقيت الصلاة</span></h1>
-        <p>Gebetszeiten, Monatskalender und Qibla-Richtung als JSON – direkt über die URL.
-           Die Berechnung läuft im Browser, ganz ohne Server.</p>
+        <div class="api-top-bar">
+          <a class="back" href="../index.html" data-i18n="docs.back">← Zur Karte</a>
+          <div class="segmented lang-switch on-night" id="langGroup" role="radiogroup" aria-label="Sprache / Language / اللغة"></div>
+        </div>
+        <h1>Prayer Times API <span class="arabic brand-tagline" lang="ar">مواقيت الصلاة</span></h1>
+        <p data-i18n="docs.intro">Gebetszeiten, Monatskalender und Qibla-Richtung als JSON – direkt über die URL.</p>
       </div>
     </header>
 
     <main class="api-main">
       <section class="panel glass">
-        <h2>Ausprobieren</h2>
+        <h2 data-i18n="docs.try">Ausprobieren</h2>
         <form id="builder" class="builder">
           <div class="b-row">
-            <label for="bEndpoint">Endpunkt</label>
+            <label for="bEndpoint" data-i18n="docs.endpoint">Endpunkt</label>
             <select id="bEndpoint" name="endpoint" class="field">
-              <option value="times">times – Gebetszeiten eines Tages</option>
-              <option value="calendar">calendar – ganzer Monat</option>
-              <option value="qibla">qibla – Qibla-Richtung</option>
-              <option value="methods">methods – Methoden &amp; Madhabs</option>
+              <option value="times" data-i18n="docs.epTimes">times</option>
+              <option value="calendar" data-i18n="docs.epCalendar">calendar</option>
+              <option value="qibla" data-i18n="docs.epQibla">qibla</option>
+              <option value="methods" data-i18n="docs.epMethods">methods</option>
             </select>
           </div>
 
           <div class="b-row" data-for="times calendar qibla">
-            <span class="label" id="modeLabel">Ort angeben über</span>
+            <span class="label" id="modeLabel" data-i18n="docs.locationBy">Ort angeben über</span>
             <div class="segmented" role="radiogroup" aria-labelledby="modeLabel">
-              <label><input type="radio" name="mode" value="city" checked><span>Stadt</span></label>
-              <label><input type="radio" name="mode" value="coords"><span>Koordinaten</span></label>
+              <label><input type="radio" name="mode" value="city" checked><span data-i18n="docs.byCity">Stadt</span></label>
+              <label><input type="radio" name="mode" value="coords"><span data-i18n="docs.byCoords">Koordinaten</span></label>
             </div>
           </div>
 
           <div class="b-grid" data-mode="city">
-            <div class="b-row"><label for="bCity">Stadt</label>
+            <div class="b-row"><label for="bCity" data-i18n="docs.city">Stadt</label>
               <input id="bCity" name="city" class="field" value="Pforzheim"></div>
-            <div class="b-row"><label for="bCountry">Land (optional)</label>
+            <div class="b-row"><label for="bCountry" data-i18n="docs.country">Land (optional)</label>
               <input id="bCountry" name="country" class="field" value="Germany"></div>
           </div>
 
           <div class="b-grid" data-mode="coords" hidden>
-            <div class="b-row"><label for="bLat">Breitengrad (lat)</label>
+            <div class="b-row"><label for="bLat" data-i18n="docs.lat">Breitengrad (lat)</label>
               <input id="bLat" name="lat" class="field" inputmode="decimal" value="48.8908"></div>
-            <div class="b-row"><label for="bLon">Längengrad (lon)</label>
+            <div class="b-row"><label for="bLon" data-i18n="docs.lon">Längengrad (lon)</label>
               <input id="bLon" name="lon" class="field" inputmode="decimal" value="8.6987"></div>
           </div>
 
           <div class="b-grid">
-            <div class="b-row" data-for="times"><label for="bDate">Datum</label>
+            <div class="b-row" data-for="times"><label for="bDate" data-i18n="docs.date">Datum</label>
               <input id="bDate" name="date" type="date" class="field"></div>
-            <div class="b-row" data-for="calendar" hidden><label for="bMonth">Monat</label>
+            <div class="b-row" data-for="calendar" hidden><label for="bMonth" data-i18n="docs.month">Monat</label>
               <input id="bMonth" name="month" type="month" class="field" placeholder="YYYY-MM"></div>
           </div>
 
           <div class="b-grid" data-for="times calendar">
-            <div class="b-row"><label for="bMethod">Methode</label>
+            <div class="b-row"><label for="bMethod" data-i18n="docs.method">Methode</label>
               <select id="bMethod" name="method" class="field"></select></div>
-            <div class="b-row"><label for="bMadhab">Madhab</label>
+            <div class="b-row"><label for="bMadhab" data-i18n="docs.madhab">Madhab</label>
               <select id="bMadhab" name="madhab" class="field"></select></div>
+          </div>
+
+          <div class="b-row">
+            <label for="bLang" data-i18n="docs.responseLang">Antwortsprache (lang)</label>
+            <select id="bLang" name="lang" class="field">
+              <option value="de">Deutsch (de)</option>
+              <option value="en">English (en)</option>
+              <option value="ar">العربية (ar)</option>
+            </select>
           </div>
 
           <div class="url-box">
@@ -83,81 +95,67 @@
           </div>
 
           <div class="b-actions">
-            <button id="runBtn" class="btn primary" type="submit">Anfrage ausführen</button>
-            <button id="copyUrl" class="btn" type="button">URL kopieren</button>
-            <a id="openLink" class="btn" target="_blank" rel="noopener">In neuem Tab öffnen ↗</a>
+            <button id="runBtn" class="btn primary" type="submit" data-i18n="docs.run">Anfrage ausführen</button>
+            <button id="copyUrl" class="btn" type="button" data-i18n="docs.copyUrl">URL kopieren</button>
+            <a id="openLink" class="btn" target="_blank" rel="noopener" data-i18n="docs.open">In neuem Tab öffnen ↗</a>
           </div>
         </form>
 
         <div id="preview" class="preview">
-          <p class="muted">Die Antwort erscheint hier.</p>
+          <p class="muted" data-i18n="docs.previewEmpty">Die Antwort erscheint hier.</p>
         </div>
       </section>
 
       <section class="panel glass">
-        <h2>Endpunkte</h2>
-        <p class="muted section-lead">
-          Ort immer entweder über <code>lat</code> &amp; <code>lon</code> oder über
-          <code>city</code> (optional mit <code>country</code>). Jede Endpunkt-Seite liefert
-          reines JSON. Mit <code>&amp;view=1</code> gibt es eine formatierte Ansicht mit
-          Kopieren und Download.
-        </p>
+        <h2 data-i18n="docs.endpoints">Endpunkte</h2>
+        <p class="muted section-lead" data-i18n-html="docs.endpointsLead"></p>
         <div id="reference" class="reference"></div>
       </section>
 
       <section class="panel glass">
-        <h2>Für Postman, curl &amp; Programme</h2>
-        <p class="muted section-lead">
-          Die <code>.html</code>-Seiten rechnen im Browser – Programme ohne JavaScript erhalten dort nur HTML.
-          Echtes JSON (<code>application/json</code>, CORS aktiviert) liefern die Endpunkte <strong>ohne</strong>
-          <code>.html</code>, bereitgestellt vom Cloudflare Worker (lokal: <code>npm run dev</code> → Port 8787).
-        </p>
+        <h2 data-i18n="docs.programs">Für Postman, curl &amp; Programme</h2>
+        <p class="muted section-lead" data-i18n-html="docs.programsLead"></p>
         <div class="reference">
           <article class="ref-card">
             <div class="ref-head"><span class="method-tag">GET</span><code>/api/times?lat=48.89&amp;lon=8.70&amp;date=2026-11-22&amp;method=TURKEY</code></div>
           </article>
           <article class="ref-card">
-            <div class="ref-head"><span class="method-tag">GET</span><code>/api/times?city=Pforzheim&amp;country=Germany&amp;method=TURKEY</code></div>
+            <div class="ref-head"><span class="method-tag">GET</span><code>/api/times?city=Pforzheim&amp;country=Germany&amp;method=TURKEY&amp;lang=en</code></div>
           </article>
           <article class="ref-card">
             <div class="ref-head"><span class="method-tag">GET</span><code>/api/calendar?lat=48.89&amp;lon=8.70&amp;month=2026-12</code></div>
           </article>
           <article class="ref-card">
-            <div class="ref-head"><span class="method-tag">GET</span><code>/api/qibla?city=Wien&amp;country=Austria</code> · <code>/api/methods</code> · <code>/api</code></div>
+            <div class="ref-head"><span class="method-tag">GET</span><code>/api/qibla?city=Mecca&amp;lang=ar</code> · <code>/api/methods</code> · <code>/api/health</code> · <code>/api</code></div>
           </article>
         </div>
-        <p class="footnote">
-          Fehler kommen mit passendem HTTP-Status (400, 404, 422, 502) und demselben JSON-Format.
-        </p>
+        <p class="footnote" data-i18n="docs.programsNote"></p>
       </section>
 
       <section class="panel glass">
-        <h2>Antwortformat &amp; Fehler</h2>
-        <p class="muted section-lead">
-          Jede Antwort enthält <code>status</code> und <code>endpoint</code>, dazu entweder
-          <code>data</code> oder <code>error</code> mit <code>code</code> und <code>message</code>.
-          Zeiten, die es an einem Ort nicht gibt (z. B. im Polarsommer), sind <code>null</code>.
-        </p>
+        <h2 data-i18n="docs.format">Antwortformat &amp; Fehler</h2>
+        <p class="muted section-lead" data-i18n-html="docs.formatLead"></p>
         <table class="param-table">
-          <thead><tr><th>Status</th><th>Code</th><th>Bedeutung</th></tr></thead>
+          <thead><tr><th data-i18n="docs.thStatus">Status</th><th data-i18n="docs.thCode">Code</th><th data-i18n="docs.thMeaning">Bedeutung</th></tr></thead>
           <tbody>
-            <tr><td>400</td><td><code>missing_location</code></td><td>Weder lat/lon noch city angegeben</td></tr>
-            <tr><td>400</td><td><code>invalid_lat</code> · <code>invalid_lon</code></td><td>Koordinate fehlt oder außerhalb des Bereichs</td></tr>
-            <tr><td>400</td><td><code>invalid_date</code> · <code>invalid_month</code></td><td>Falsches Format (YYYY-MM-DD bzw. YYYY-MM)</td></tr>
-            <tr><td>400</td><td><code>invalid_method</code> · <code>invalid_madhab</code></td><td>Unbekannter Wert – erlaubte Werte stehen in der Meldung</td></tr>
-            <tr><td>404</td><td><code>city_not_found</code></td><td>Stadt nicht gefunden</td></tr>
-            <tr><td>422</td><td><code>timezone_not_found</code></td><td>Keine Zeitzone für den Ort</td></tr>
-            <tr><td>502</td><td><code>geocoding_failed</code></td><td>Ortssuche (Nominatim) nicht erreichbar</td></tr>
+            <tr><td>400</td><td><code>missing_location</code></td><td data-i18n="docs.errMissing"></td></tr>
+            <tr><td>400</td><td><code>invalid_lat</code> · <code>invalid_lon</code></td><td data-i18n="docs.errCoords"></td></tr>
+            <tr><td>400</td><td><code>invalid_date</code> · <code>invalid_month</code></td><td data-i18n="docs.errFormat"></td></tr>
+            <tr><td>400</td><td><code>invalid_method</code> · <code>invalid_madhab</code> · <code>invalid_lang</code></td><td data-i18n="docs.errValue"></td></tr>
+            <tr><td>404</td><td><code>city_not_found</code></td><td data-i18n="docs.errCity"></td></tr>
+            <tr><td>422</td><td><code>timezone_not_found</code></td><td data-i18n="docs.errTz"></td></tr>
+            <tr><td>502</td><td><code>geocoding_failed</code></td><td data-i18n="docs.errGeo"></td></tr>
           </tbody>
         </table>
-        <p class="footnote">
-          Hinweis: Die Seiten liefern JSON nur im Browser (JavaScript nötig) – <code>curl</code> oder
-          <code>fetch()</code> erhalten nur das HTML-Gerüst. Für Browser-Automatisierung (z. B. Playwright)
-          steht das Ergebnis als <code>window.apiResult</code> bereit.
-          Die Ortssuche nutzt den öffentlichen Dienst Nominatim – bitte keine Massenabfragen.
-        </p>
+        <p class="footnote" data-i18n="docs.footnote"></p>
       </section>
     </main>
+
+    <footer class="api-footer">
+      <span data-i18n="footer.madeBy">Erstellt von</span>
+      <a href="https://github.com/Mohmad-Naser-alnakeshbandi" target="_blank" rel="noopener">Mohamad Naser Alnakshbandi</a> ·
+      <a href="https://github.com/Mohmad-Naser-alnakeshbandi/prayer-times" target="_blank" rel="noopener" data-i18n="footer.source">Quellcode auf GitHub</a>
+    </footer>
   </div>
   <script type="module" src="../js/api/docs.js"></script>
 </body>

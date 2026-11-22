@@ -1,6 +1,6 @@
 {
   "name": "prayer-times-map",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Gebetszeiten weltweit – Karte, Browser-API und JSON-API (Cloudflare Worker)",
   "author": "Mohamad Naser Alnakshbandi (https://github.com/Mohmad-Naser-alnakeshbandi)",
   "homepage": "https://prayer-times-map.salah-times.workers.dev",

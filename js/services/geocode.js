@@ -51,8 +51,8 @@ export async function reverseGeocode(lat, lon, language = "de") {
  * Sucht eine Stadt (optional mit Land) und liefert Koordinaten + Namen,
  * oder null, wenn nichts gefunden wurde.
  */
-export async function searchCity(city, country) {
-  const cacheKey = `city:${city.toLowerCase()}|${(country ?? "").toLowerCase()}`;
+export async function searchCity(city, country, language = "de") {
+  const cacheKey = `city:${language}:${city.toLowerCase()}|${(country ?? "").toLowerCase()}`;
   const cached = await cityCache?.get(cacheKey);
   if (cached !== undefined) return cached;
 
@@ -63,14 +63,14 @@ export async function searchCity(city, country) {
     ...(country && { country }),
     limit: "1",
     addressdetails: "1",
-    "accept-language": "de"
+    "accept-language": language
   });
 
   const response = await fetch(url, { headers: requestHeaders() });
   if (!response.ok) throw new Error("Ortssuche fehlgeschlagen.");
   const [hit] = await response.json();
   const place = hit
-    ? { lat: Number(hit.lat), lon: Number(hit.lon), name: formatPlace(hit.address || {}) }
+    ? { lat: Number(hit.lat), lon: Number(hit.lon), name: formatPlace(hit.address || {}, language) }
     : null;
   await cityCache?.put(cacheKey, place); // auch "nicht gefunden" merken
   return place;

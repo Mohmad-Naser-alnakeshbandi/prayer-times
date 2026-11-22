@@ -1,7 +1,11 @@
-// Doku-Seite (api/index.html): URL-Baukasten, Live-Vorschau, Endpunkt-Referenz.
+// Doku-Seite (api/index.html): Sprachwahl, URL-Baukasten, Live-Vorschau, Endpunkt-Referenz.
 // Mit ?raw=1 liefert die Seite stattdessen die Übersicht als reines JSON.
 import { CALCULATION_METHODS, MADHABS } from "../config.js";
 import { todayIn, browserTimeZone } from "../core/time.js";
+import {
+  detectLanguage, getLanguage, onLanguageChange, renderLanguageSwitch, setLanguage, t
+} from "../core/i18n.js";
+import { loadSettings, saveSettings } from "../core/settings.js";
 import { endpoints } from "./endpoints.js";
 import { readQuery } from "./params.js";
 import { execute } from "./run.js";
@@ -9,59 +13,82 @@ import { renderRaw, renderViewer } from "./view.js";
 
 const $ = (id) => document.getElementById(id);
 
-/* ---------- Roh-Modus ---------- */
+/* ---------- Start ---------- */
 
-if ("raw" in readQuery()) {
-  const result = await execute("index", {});
+const query = readQuery();
+if ("raw" in query) {
+  const result = await execute("index", { lang: query.lang });
   window.apiResult = result;
   document.body.classList.add("raw-mode");
   renderRaw($("app"), result);
 } else {
+  setLanguage(detectLanguage(loadSettings().lang));
+  renderLanguageSwitch($("langGroup"), (id) => {
+    saveSettings({ lang: id });
+    setLanguage(id);
+  });
   initBuilder();
-  renderReference(await endpoints.index());
+  onLanguageChange(translatePage);
+  translatePage();
+}
+
+/** Alles Sprachabhängige, das nicht über data-i18n läuft. */
+async function translatePage() {
+  const lang = getLanguage().id;
+  fillOptions($("bMethod"), CALCULATION_METHODS.map(({ id }) => [id, `${t(`methods.${id}`)} (${id})`]));
+  fillOptions($("bMadhab"), MADHABS.map(({ id }) => [id, `${t(`madhabs.${id}.label`)} (${id})`]));
+  $("bLang").value = lang; // Antwortsprache folgt der Oberfläche (änderbar)
+  renderReference(await endpoints.index({}, lang));
+  updateUrl();
+}
+
+function fillOptions(select, entries) {
+  const value = select.value;
+  select.replaceChildren(...entries.map(([id, label]) => new Option(label, id)));
+  if (value) select.value = value;
 }
 
 /* ---------- URL-Baukasten ---------- */
 
 function initBuilder() {
   const form = $("builder");
-  $("bMethod").replaceChildren(...CALCULATION_METHODS.map((m) => new Option(`${m.label} (${m.id})`, m.id)));
-  $("bMadhab").replaceChildren(...MADHABS.map((m) => new Option(`${m.label} (${m.id})`, m.id)));
+  fillOptions($("bMethod"), CALCULATION_METHODS.map(({ id }) => [id, id]));
+  fillOptions($("bMadhab"), MADHABS.map(({ id }) => [id, id]));
   $("bMethod").value = "TURKEY";
   $("bDate").value = todayIn(browserTimeZone());
   $("bMonth").value = $("bDate").value.slice(0, 7);
 
-  const update = () => {
-    syncVisibility();
-    $("builtUrl").textContent = buildUrl().href;
-    $("openLink").href = buildUrl().href;
-  };
-  form.addEventListener("input", update);
-  form.addEventListener("change", update);
+  form.addEventListener("input", updateUrl);
+  form.addEventListener("change", updateUrl);
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
     const btn = $("runBtn");
     btn.disabled = true;
-    btn.textContent = "Läuft …";
-    const { endpoint, query } = readForm();
-    const result = await execute(endpoint, query);
+    btn.textContent = t("docs.running");
+    const { endpoint, query: params } = readForm();
+    const result = await execute(endpoint, params);
     renderViewer($("preview"), result, { compact: true, fileName: `${endpoint}.json` });
     btn.disabled = false;
-    btn.textContent = "Anfrage ausführen";
+    btn.textContent = t("docs.run");
   });
 
   $("copyUrl").addEventListener("click", async () => {
     try {
       await navigator.clipboard.writeText(buildUrl().href);
-      $("copyUrl").textContent = "Kopiert ✓";
+      $("copyUrl").textContent = t("viewer.copied");
     } catch {
-      $("copyUrl").textContent = "Nicht möglich";
+      $("copyUrl").textContent = t("viewer.copyFailed");
     }
-    setTimeout(() => { $("copyUrl").textContent = "URL kopieren"; }, 1500);
+    setTimeout(() => { $("copyUrl").textContent = t("docs.copyUrl"); }, 1500);
   });
+}
 
-  update();
+function updateUrl() {
+  syncVisibility();
+  const url = buildUrl().href;
+  $("builtUrl").textContent = url;
+  $("openLink").href = url;
 }
 
 /** Zeigt nur die Felder, die zum gewählten Endpunkt gehören. */
@@ -79,8 +106,8 @@ function syncVisibility() {
 function readForm() {
   const endpoint = $("bEndpoint").value;
   const data = new FormData($("builder"));
-  const query = {};
-  const set = (key, value) => { if (value && String(value).trim()) query[key] = String(value).trim(); };
+  const params = {};
+  const set = (key, value) => { if (value && String(value).trim()) params[key] = String(value).trim(); };
 
   if (endpoint !== "methods") {
     if (data.get("mode") === "city") {
@@ -97,13 +124,15 @@ function readForm() {
     set("method", data.get("method"));
     set("madhab", data.get("madhab"));
   }
-  return { endpoint, query };
+  // Deutsch ist Standard – nur andere Sprachen in die URL schreiben
+  if (data.get("lang") && data.get("lang") !== "de") set("lang", data.get("lang"));
+  return { endpoint, query: params };
 }
 
 function buildUrl() {
-  const { endpoint, query } = readForm();
+  const { endpoint, query: params } = readForm();
   const url = new URL(`${endpoint}.html`, window.location.href);
-  url.search = new URLSearchParams(query);
+  url.search = new URLSearchParams(params);
   return url;
 }
 
@@ -130,8 +159,14 @@ function renderReference(index) {
     if (params.length) {
       const table = document.createElement("table");
       table.className = "param-table";
-      table.innerHTML = "<thead><tr><th>Parameter</th><th>Beschreibung</th></tr></thead>";
-      const body = document.createElement("tbody");
+      const headRow = document.createElement("tr");
+      for (const key of ["docs.thParam", "docs.thDesc"]) {
+        const th = document.createElement("th");
+        th.textContent = t(key);
+        headRow.append(th);
+      }
+      table.createTHead().append(headRow);
+      const body = table.createTBody();
       for (const [key, text] of params) {
         const row = body.insertRow();
         const k = document.createElement("code");
@@ -139,7 +174,6 @@ function renderReference(index) {
         row.insertCell().append(k);
         row.insertCell().textContent = text;
       }
-      table.append(body);
       card.append(table);
     }
 

@@ -52,12 +52,35 @@ export function t(key, vars = {}) {
   return value;
 }
 
-/** Überträgt data-i18n-Attribute auf Text, Platzhalter, aria-label und title. */
+/**
+ * Überträgt data-i18n-Attribute auf Text, HTML (nur eigene Wörterbuch-Texte),
+ * Platzhalter und aria-label. Der Seitentitel kommt aus <html data-i18n-title="…">.
+ */
 export function applyTranslations(root = document) {
   for (const el of root.querySelectorAll("[data-i18n]")) el.textContent = t(el.dataset.i18n);
+  for (const el of root.querySelectorAll("[data-i18n-html]")) el.innerHTML = t(el.dataset.i18nHtml);
   for (const el of root.querySelectorAll("[data-i18n-placeholder]")) el.placeholder = t(el.dataset.i18nPlaceholder);
   for (const el of root.querySelectorAll("[data-i18n-aria-label]")) el.setAttribute("aria-label", t(el.dataset.i18nAriaLabel));
-  document.title = t("meta.title");
+  document.title = t(document.documentElement.dataset.i18nTitle || "meta.title");
+}
+
+/** Füllt einen Segment-Schalter mit DE · EN · عربي; onSelect(id) bei Wechsel. */
+export function renderLanguageSwitch(container, onSelect) {
+  container.replaceChildren(...LANGUAGES.map(({ id, short, name }) => {
+    const label = document.createElement("label");
+    label.title = name;
+    const input = document.createElement("input");
+    input.type = "radio";
+    input.name = `${container.id}-lang`;
+    input.value = id;
+    input.checked = id === current.id;
+    const span = document.createElement("span");
+    span.textContent = short;
+    span.lang = id;
+    label.append(input, span);
+    return label;
+  }));
+  container.addEventListener("change", (event) => onSelect(event.target.value));
 }
 
 export function setLanguage(id) {

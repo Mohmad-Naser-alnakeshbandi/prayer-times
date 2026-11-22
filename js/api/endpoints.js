@@ -1,12 +1,14 @@
-// Die API-Endpunkte. Jeder bekommt die geprüften URL-Parameter
-// und liefert ein einfaches Objekt, das als JSON ausgegeben wird.
+// Die API-Endpunkte. Jeder bekommt die geprüften URL-Parameter und die Sprache
+// (de/en/ar) und liefert ein einfaches Objekt, das als JSON ausgegeben wird.
 import { CALCULATION_METHODS, MADHABS, PRAYERS } from "../config.js";
 import { compassPoint, formatTime, isoInZone, isValidDate, todayIn } from "../core/time.js";
 import { computePrayerDay, qiblaDirection } from "../services/prayer-times.js";
 import { resolveLocation } from "./location.js";
+import { compassPoints, madhabName, methodName, overviewText } from "./messages.js";
 import { parseDate, parseMethod, parseMonth } from "./params.js";
 
-const describe = ({ id, label }) => ({ id, name: label });
+const describeMethod = (lang, { id }) => ({ id, name: methodName(lang, id) });
+const describeMadhab = (lang, { id }) => ({ id, name: madhabName(lang, id) });
 
 function formatTimes(times, timeZone) {
   const local = {};
@@ -30,18 +32,18 @@ function dayFor(location, dateString, method, madhab) {
   });
 }
 
-async function times(query) {
+async function times(query, lang) {
   const { method, madhab } = parseMethod(query);
   const date = parseDate(query.date);
-  const location = await resolveLocation(query);
+  const location = await resolveLocation(query, lang);
   const dateString = date ?? todayIn(location.timezone);
   const { times: raw, next } = dayFor(location, dateString, method, madhab);
 
   return {
     location,
     date: dateString,
-    method: describe(method),
-    madhab: describe(madhab),
+    method: describeMethod(lang, method),
+    madhab: describeMadhab(lang, madhab),
     ...formatTimes(raw, location.timezone),
     nextPrayer: next && {
       prayer: next.key,
@@ -52,10 +54,10 @@ async function times(query) {
   };
 }
 
-async function calendar(query) {
+async function calendar(query, lang) {
   const { method, madhab } = parseMethod(query);
   const month = parseMonth(query.month);
-  const location = await resolveLocation(query);
+  const location = await resolveLocation(query, lang);
   const [y, m] = todayIn(location.timezone).split("-").map(Number);
   const { year, month: mon } = month ?? { year: y, month: m };
   const daysInMonth = new Date(Date.UTC(year, mon, 0)).getUTCDate();
@@ -67,57 +69,64 @@ async function calendar(query) {
     return { date, times: formatTimes(raw, location.timezone).times };
   });
 
-  return { location, month: prefix, method: describe(method), madhab: describe(madhab), days };
+  return {
+    location,
+    month: prefix,
+    method: describeMethod(lang, method),
+    madhab: describeMadhab(lang, madhab),
+    days
+  };
 }
 
-async function qibla(query) {
-  const location = await resolveLocation(query);
+async function qibla(query, lang) {
+  const location = await resolveLocation(query, lang);
   const degrees = qiblaDirection(location.latitude, location.longitude);
   return {
     location,
-    qibla: { degrees: Math.round(degrees * 100) / 100, compass: compassPoint(degrees) }
+    qibla: { degrees: Math.round(degrees * 100) / 100, compass: compassPoint(degrees, compassPoints(lang)) }
   };
 }
 
-async function methods() {
+async function methods(_query, lang) {
   return {
-    methods: CALCULATION_METHODS.map(describe),
-    madhabs: MADHABS.map(describe)
+    methods: CALCULATION_METHODS.map((m) => describeMethod(lang, m)),
+    madhabs: MADHABS.map((m) => describeMadhab(lang, m))
   };
 }
 
-async function index() {
-  const location = "lat & lon ODER city (+ optional country)";
+/** Übersicht der Browser-API-Seiten (für die Doku-Seite und ?raw=1). */
+async function index(_query, lang) {
+  const text = overviewText(lang);
+  const common = { method: text.method, madhab: "SHAFI | HANAFI", lang: text.lang };
   return {
-    name: "Prayer Times Map – Browser-API",
-    note: "Die Ergebnisse werden im Browser berechnet. Die Seiten liefern JSON nur, wenn JavaScript ausgeführt wird.",
+    name: "Prayer Times Map – Browser API",
     endpoints: [
       {
         path: "api/times.html",
-        description: "Gebetszeiten eines Tages",
-        params: { location, date: "YYYY-MM-DD (Standard: heute am Ort)", method: "siehe methods", madhab: "SHAFI | HANAFI" },
+        description: text.times,
+        params: { location: text.location, date: text.date, ...common },
         examples: [
           "api/times.html?lat=48.89&lon=8.70&date=2026-11-22&method=TURKEY",
-          "api/times.html?city=Pforzheim&country=Germany&method=TURKEY"
+          "api/times.html?city=Pforzheim&country=Germany&method=TURKEY&lang=en"
         ]
       },
       {
         path: "api/calendar.html",
-        description: "Gebetszeiten eines ganzen Monats",
-        params: { location, month: "YYYY-MM (Standard: aktueller Monat am Ort)", method: "siehe methods", madhab: "SHAFI | HANAFI" },
+        description: text.calendar,
+        params: { location: text.location, month: text.month, ...common },
         examples: ["api/calendar.html?city=Berlin&country=Germany&month=2026-12&method=MWL"]
       },
       {
         path: "api/qibla.html",
-        description: "Qibla-Richtung in Grad ab Norden",
-        params: { location },
-        examples: ["api/qibla.html?city=Wien&country=Austria"]
+        description: text.qibla,
+        params: { location: text.location, lang: text.lang },
+        examples: ["api/qibla.html?city=Mecca&lang=ar"]
       },
       {
         path: "api/methods.html",
-        description: "Alle Berechnungsmethoden und Madhabs",
-        params: {},
-        examples: ["api/methods.html"]
+        description: text.methods,
+        params: { lang: text.lang },
+        examples: ["api/methods.html?lang=en"]
       }
     ]
   };

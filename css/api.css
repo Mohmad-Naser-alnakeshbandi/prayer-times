@@ -69,7 +69,7 @@ code { font-family: var(--mono); font-size: .92em; }
 
 .param-table { width: 100%; margin-top: 12px; border-collapse: collapse; font-size: 12px; }
 .param-table th {
-  padding: 8px 10px; text-align: left; color: var(--muted);
+  padding: 8px 10px; text-align: start; color: var(--muted);
   font-size: 11px; font-weight: 700; border-bottom: 1px solid var(--line);
 }
 .param-table td { padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
@@ -129,3 +129,21 @@ pre.raw {
   .panel { padding: 16px; }
   .api-top h1 { font-size: 22px; }
 }
+
+/* ---------- Sprachen & Footer ---------- */
+.api-top-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.lang-switch.on-night { background: rgb(255 255 255 / 10%); }
+.lang-switch.on-night span { color: var(--on-night); }
+.lang-switch.on-night input:checked + span { background: rgb(255 255 255 / 92%); color: #0d1a2b; }
+
+.api-footer {
+  max-width: 980px; margin: 0 auto; padding: 4px 20px 32px;
+  text-align: center; color: var(--faint); font-size: 12px;
+}
+
+/* JSON, URLs und Code immer links-nach-rechts – auch in der arabischen Oberfläche */
+.json, .viewer-url, .url-box, .examples, .ref-head, code {
+  direction: ltr; unicode-bidi: isolate;
+}
+.json, .viewer-url, .examples a { text-align: left; }
+[dir="rtl"] .url-box, [dir="rtl"] .ref-head { justify-content: flex-end; }

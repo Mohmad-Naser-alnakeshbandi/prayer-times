@@ -38,7 +38,7 @@ calculation, Qibla) without calling external services:
   "data": {
     "status": "ok",
     "service": "prayer-times-map",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "time": "2026-11-22T20:15:00.000Z",
     "durationMs": 2,
     "checks": { "timezone": "ok", "calculation": "ok", "qibla": "ok" }
@@ -88,6 +88,7 @@ Base URL: `https://prayer-times-map.salah-times.workers.dev`
 | `month` | `YYYY-MM` | current month at the location |
 | `method` | `MWL`, `EGYPT`, `KARACHI`, `UMM_AL_QURA`, `DUBAI`, `QATAR`, `KUWAIT`, `SINGAPORE`, `TURKEY`, `NORTH_AMERICA` | `MWL` |
 | `madhab` | `SHAFI` (Shafi'i, Maliki, Hanbali) or `HANAFI` | `SHAFI` |
+| `lang` | `de`, `en` or `ar` – language of method/madhab names, place names, compass points and error messages | `de` |
 
 The location is given either as `lat` + `lon` **or** as `city` (optionally with `country`).
 
@@ -117,7 +118,7 @@ curl "https://prayer-times-map.salah-times.workers.dev/api/times?lat=48.89&lon=8
 ```
 
 `nextPrayer` is only set when `date` is "today" at the location. Times that do not exist at a
-place (e.g. Isha during the polar summer) are `null`. Names and messages in the API are in German.
+place (e.g. Isha during the polar summer) are `null`. Names and messages are German by default – add `lang=en` or `lang=ar` for English or Arabic.
 
 ### Errors
 
