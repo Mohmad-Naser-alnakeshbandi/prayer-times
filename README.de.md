@@ -201,6 +201,23 @@ worker/index.js           Cloudflare Worker (JSON-API, Health-Check)
 wrangler.toml             Worker-Konfiguration
 ```
 
+## Mitwirkende
+
+<table>
+  <tr>
+    <td align="center">
+      <a href="https://github.com/Mohmad-Naser-alnakeshbandi">
+        <img src="https://github.com/Mohmad-Naser-alnakeshbandi.png?size=100" width="100" alt="Mohamad Naser Alnakshbandi"><br>
+        <b>Mohamad Naser Alnakshbandi</b>
+      </a><br>
+      <sub>Autor &amp; Maintainer</sub>
+    </td>
+  </tr>
+</table>
+
+Ideen, Fehlermeldungen und Pull Requests sind willkommen –
+über die [Issues](https://github.com/Mohmad-Naser-alnakeshbandi/prayer-times/issues).
+
 ## Quellen & Daten
 
 - Kartendaten © [OpenStreetMap](https://www.openstreetmap.org/copyright)-Mitwirkende

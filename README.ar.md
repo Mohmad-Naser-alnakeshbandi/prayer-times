@@ -217,6 +217,24 @@ wrangler.toml             إعدادات الـ Worker
 
 <div dir="rtl">
 
+## المساهمون
+
+<table>
+  <tr>
+    <td align="center">
+      <a href="https://github.com/Mohmad-Naser-alnakeshbandi">
+        <img src="https://github.com/Mohmad-Naser-alnakeshbandi.png?size=100" width="100" alt="Mohamad Naser Alnakshbandi"><br>
+        <b>محمد ناصر النقشبندي</b><br>
+        <b>Mohamad Naser Alnakshbandi</b>
+      </a><br>
+      <sub>المؤلف والمشرف على المشروع</sub>
+    </td>
+  </tr>
+</table>
+
+نرحّب بالأفكار والإبلاغ عن الأخطاء وطلبات الدمج (Pull Requests) عبر
+[صفحة Issues](https://github.com/Mohmad-Naser-alnakeshbandi/prayer-times/issues).
+
 ## المصادر والبيانات
 
 - بيانات الخريطة © المساهمون في [OpenStreetMap](https://www.openstreetmap.org/copyright)
