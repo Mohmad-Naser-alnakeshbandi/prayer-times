@@ -15,15 +15,27 @@ permissions:
 jobs:
   check:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     env:
       BASE: https://prayer-times-map.salah-times.workers.dev
     steps:
+      # Nach einem Push kann der Deploy (z. B. über Cloudflare Workers Builds) noch laufen:
+      # dann bis zu 5 Minuten auf eine gesunde Antwort warten, sonst nur kurz wiederholen.
       - name: Health endpoint
         run: |
-          body=$(curl -fsS --retry 3 --retry-delay 5 "$BASE/api/health")
-          echo "$body" | jq .
-          test "$(echo "$body" | jq -r .data.status)" = "ok"
+          if [ "${{ github.event_name }}" = "push" ]; then attempts=20; else attempts=3; fi
+          for i in $(seq 1 "$attempts"); do
+            body=$(curl -fsS "$BASE/api/health" || true)
+            if [ "$(echo "$body" | jq -r '.data.status' 2>/dev/null)" = "ok" ]; then
+              echo "$body" | jq .
+              exit 0
+            fi
+            echo "Versuch $i/$attempts: noch nicht bereit – warte 15 s"
+            sleep 15
+          done
+          echo "Health-Check fehlgeschlagen. Letzte Antwort:"
+          echo "$body"
+          exit 1
 
       - name: Prayer times endpoint
         run: |
